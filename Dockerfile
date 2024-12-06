@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Устанавливаем рабочую директорию
-WORKDIR /app
+WORKDIR /core
 
 # Устанавливаем зависимости системы
 RUN apt-get update && apt-get install -y \
