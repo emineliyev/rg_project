@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}
-
-{% endblock %}
+{% block title %}{{ block.super }}: Əsas səhifə{% endblock %}
 
 {% block content %}
 <div id="wrapper-site">
@@ -15,8 +13,7 @@
                         <div class="col-lg-6 col-md-6">
                             <div class="effect">
                                 <a href="#">
-                                    <img class="img-fluid width-100" src="{% static 'assets/img/home/effect10.jpg' %}" alt="banner-2"
-                                         title="banner-2">
+                                    <img class="img-fluid width-100" src="{% static 'assets/img/home/effect10.jpg' %}" alt="banner-2" title="banner-2">
                                 </a>
                             </div>
                         </div>
@@ -480,9 +477,9 @@
                                                         <div class="thumbnail-container">
                                                             <a href="product-detail.html">
                                                                 <img class="img-fluid image-cover"
-                                                                     src="img/product/6.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/6.jpg' %}" alt="img">
                                                                 <img class="img-fluid image-secondary"
-                                                                     src="img/product/23.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/23.jpg' %}" alt="img">
                                                             </a>
                                                             <div class="product-flags discount">-30%</div>
                                                             <div class="highlighted-informations">
@@ -542,9 +539,9 @@
                                                         <div class="thumbnail-container">
                                                             <a href="product-detail.html">
                                                                 <img class="img-fluid image-cover"
-                                                                     src="img/product/10.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/10.jpg' %}" alt="img">
                                                                 <img class="img-fluid image-secondary"
-                                                                     src="img/product/11.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/11.jpg' %}" alt="img">
                                                             </a>
                                                             <div class="product-flags discount">-10%</div>
                                                             <div class="highlighted-informations">
@@ -604,9 +601,9 @@
                                                         <div class="thumbnail-container">
                                                             <a href="product-detail.html">
                                                                 <img class="img-fluid image-cover"
-                                                                     src="img/product/16.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/16.jpg' %}" alt="img">
                                                                 <img class="img-fluid image-secondary"
-                                                                     src="img/product/14.jpg" alt="img">
+                                                                     src="{% static 'assets/img/product/14.jpg' %}" alt="img">
                                                             </a>
                                                             <div class="highlighted-informations">
                                                                 <div class="variant-links">
@@ -827,6 +824,7 @@
                         </div>
                     </div>
                 </div>
+
             </section>
         </div>
     </div>

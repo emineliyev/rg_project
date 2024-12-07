@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 {% load static %}
-<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
-<!--[if IE 9 ]><html class="ie ie9" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
-<!--<![endif]-->
 <html lang="en">
 
 
@@ -12,7 +8,7 @@
     <!-- Basic Page Needs -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Furnitica - Minimalist Furniture HTML Template</title>
+    <title>{% block title %}Rafig Jewellery{% endblock %}</title>
 
     <meta name="keywords" content="Furniture, Decor, Interior">
     <meta name="description" content="Furnitica - Minimalist Furniture HTML Template">
@@ -49,9 +45,11 @@
     <!-- main content -->
     <div class="main-content">
         <div class="wrap-banner">
+            {% comment %}
             <!-- category menu  -->
             {% include 'inc/_category.html' %}
             <!-- category menu  -->
+            {% endcomment %}
 
             <!-- slide-show -->
             {% include 'inc/_slider.html' %}
@@ -72,10 +70,11 @@
         </a>
     </div>
     <!-- back top-top -->
-
+    {% comment %}
     <!-- menu mobie left -->
     {% include 'inc/_menu-left.html' %}
     <!-- menu mobie left -->
+    {% endcomment %}
 
     <!-- menu mobie right -->
     {% include 'inc/_menu-right.html' %}
