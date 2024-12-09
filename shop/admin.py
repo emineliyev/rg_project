@@ -25,15 +25,23 @@ class MaterialAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
+class PiercingImageInline(admin.TabularInline):
+    model = PiercingImage
+    extra = 1
+
 @admin.register(Piercing)
 class PiercingAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {"slug": ("name",)}
+    inlines = [PiercingImageInline]
 
+    def main_image_preview(self, obj):
+        main_image = obj.images.filter(is_main=True).first()
+        if main_image and main_image.images:
+            return format_html('<img src="{}" style="width: 50px; height: auto;" />', main_image.images.url)
+        return "No image"
 
-@admin.register(PiercingImage)
-class PiercingImageAdmin(admin.ModelAdmin):
-    pass
+    main_image_preview.short_description = "Главная картинка"
 
 
 @admin.register(PiercingWeightOption)

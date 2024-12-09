@@ -92,7 +92,7 @@ class PiercingImage(models.Model):
     images = models.ImageField(upload_to='piercing/%Y/%m/%d', verbose_name='Картинка')
 
     def __str__(self):
-        return self.piercing
+        return self.piercing.name
 
     class Meta:
         verbose_name = 'Картинка'
