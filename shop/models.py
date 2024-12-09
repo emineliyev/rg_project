@@ -1,10 +1,124 @@
 from django.db import models
-from django.utils import timezone
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Название')
+    slug = models.SlugField(max_length=100, unique=True, verbose_name='Слаг')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+
+class Material(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Название')
+    slug = models.SlugField(max_length=100, unique=True, verbose_name='Слаг')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Материал'
+        verbose_name_plural = 'Материалы'
+
+
+class Piercing(models.Model):
+    """
+    Модель для представления пирсингов.
+    """
+    code = models.CharField(max_length=60, verbose_name='Код')
+    name = models.CharField(max_length=255, verbose_name="Название")
+    slug = models.SlugField(unique=True, max_length=255, verbose_name='Слаг')
+    description = models.TextField(verbose_name='Описание')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='Материал')
+    video = models.FileField(upload_to='video/%Y/%m/%d', verbose_name='Видео')
+    base_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Базовая цена")
+    in_stock = models.PositiveIntegerField(default=0, verbose_name="Количество на складе")
+    discount_threshold = models.PositiveIntegerField(
+        default=10, verbose_name="Порог для скидки",
+        help_text="Количество товара, начиная с которого применяется скидка"
+    )
+    discount_percentage = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0, verbose_name="Процент скидки",
+        help_text="Процент скидки при покупке количества, равного или превышающего порог"
+    )
+    recommendations = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='recommended_for',
+        verbose_name="Рекомендуемые товары"
+    )
+    campaigns = models.ManyToManyField(
+        'DiscountCampaign',
+        blank=True,
+        related_name='piercings',
+        verbose_name="Акции"
+    )
+
+    def get_discounted_price(self, quantity):
+        """
+        Рассчитывает цену с учетом скидок на количество и временных акций.
+        """
+        price = self.base_price
+
+        # Применяем скидку на основе количества
+        if quantity >= self.discount_threshold:
+            price *= (1 - self.discount_percentage / 100)
+
+        # Применяем максимальную скидку из активных акций
+        active_campaigns = self.campaigns.filter(is_active=True, start_date__lte=now(), end_date__gte=now())
+        if active_campaigns.exists():
+            max_campaign_discount = max(campaign.discount_percentage for campaign in active_campaigns)
+            price *= (1 - max_campaign_discount / 100)
+
+        return price
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Пирсинг'
+        verbose_name_plural = 'Пирсинги'
+
+
+class PiercingImage(models.Model):
+    piercing = models.ForeignKey(Piercing, models.CASCADE, verbose_name='Пирсинг')
+    images = models.ImageField(upload_to='piercing/%Y/%m/%d', verbose_name='Картинка')
+
+    def __str__(self):
+        return self.piercing
+
+    class Meta:
+        verbose_name = 'Картинка'
+        verbose_name_plural = 'Картинки'
+
+
+class PiercingWeightOption(models.Model):
+    """
+    Модель для представления весовых вариаций пирсинга.
+    """
+    piercing = models.ForeignKey(Piercing, related_name='weight_options', on_delete=models.CASCADE,
+                                 verbose_name="Пирсинг")
+    weight = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Вес (г)")
+    extra_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Дополнительная цена")
+
+    def __str__(self):
+        return f"{self.piercing.name} - {self.weight} г"
+
+    class Meta:
+        verbose_name = 'Вес'
+        verbose_name_plural = 'Весы'
+
 
 class DiscountCampaign(models.Model):
     """
-    Модель для представления акций, которые применяются к пирсингам
-    в заданный период времени.
+    Модель для временных акций и скидок.
     """
     name = models.CharField(max_length=255, verbose_name="Название акции")
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
@@ -12,7 +126,7 @@ class DiscountCampaign(models.Model):
         max_digits=5,
         decimal_places=2,
         verbose_name="Процент скидки",
-        help_text="Процент скидки, который будет применен (например, 10 для 10%)."
+        help_text="Процент скидки, применяемый к товарам в рамках акции"
     )
     start_date = models.DateTimeField(verbose_name="Дата начала")
     end_date = models.DateTimeField(verbose_name="Дата окончания")
@@ -22,103 +136,96 @@ class DiscountCampaign(models.Model):
         """
         Проверяет, активна ли акция в данный момент.
         """
-        now = timezone.now()
-        return self.is_active and self.start_date <= now <= self.end_date
+        return self.is_active and self.start_date <= now() <= self.end_date
 
     def __str__(self):
-        return f"{self.name} ({self.discount_percentage}% скидка)"
+        return f"{self.name} ({self.discount_percentage}%)"
+
+    class Meta:
+        verbose_name = 'Акция'
+        verbose_name_plural = 'Акции'
 
 
-class Piercing(models.Model):
+class PromoCode(models.Model):
     """
-    Модель для представления пирсингов и их базовых характеристик.
+    Модель для промокодов.
     """
-    name = models.CharField(max_length=255, verbose_name="Название")
-    type = models.CharField(max_length=100, verbose_name="Тип")
-    material = models.CharField(max_length=100, verbose_name="Материал")
-    color = models.CharField(max_length=50, verbose_name="Цвет")
-    body_part = models.CharField(max_length=100, verbose_name="Часть тела")
-    base_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Базовая цена")
-    description = models.TextField(blank=True, null=True, verbose_name="Описание")
-    image = models.ImageField(upload_to="piercings/", blank=True, null=True, verbose_name="Изображение")
-    in_stock = models.PositiveIntegerField(default=0, verbose_name="Количество на складе")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
-    is_active = models.BooleanField(default=True, verbose_name="Активен для продажи")
-    campaigns = models.ManyToManyField(
-        DiscountCampaign,
-        blank=True,
-        related_name="piercings",
-        verbose_name="Акции"
+    code = models.CharField(max_length=50, unique=True, verbose_name="Промокод")
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Процент скидки")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    valid_from = models.DateTimeField(verbose_name="Начало действия")
+    valid_to = models.DateTimeField(verbose_name="Окончание действия")
+
+    def is_valid(self):
+        """
+        Проверка активности промокода.
+        """
+        return self.is_active and self.valid_from <= now() <= self.valid_to
+
+    def __str__(self):
+        return self.code
+
+    class Meta:
+        verbose_name = 'Промо код'
+        verbose_name_plural = 'Промо коды'
+
+
+class Order(models.Model):
+    """
+    Модель для представления заказов.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    items = models.JSONField(default=dict, verbose_name="Список товаров")
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Итоговая сумма")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата заказа")
+    status = models.CharField(
+        max_length=50,
+        choices=[
+            ('pending', 'Ожидает обработки'),
+            ('completed', 'Завершён'),
+            ('cancelled', 'Отменён'),
+            ('returned', 'Возвращён')
+        ],
+        default='pending',
+        verbose_name="Статус заказа"
     )
 
-    def get_discounted_price(self):
-        """
-        Возвращает цену со скидкой, если активные акции есть.
-        Если скидок нет, возвращается базовая цена.
-        """
-        active_campaigns = self.campaigns.filter(
-            is_active=True,
-            start_date__lte=timezone.now(),
-            end_date__gte=timezone.now()
-        )
-        if active_campaigns.exists():
-            max_discount = max(campaign.discount_percentage for campaign in active_campaigns)
-            return self.base_price * (1 - max_discount / 100)
-        return self.base_price
+    def __str__(self):
+        return f"Заказ #{self.id} - {self.user.username} ({self.status})"
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+
+class Notification(models.Model):
+    """
+    Модель для уведомлений о снижении цен и доступности товара.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.TextField(verbose_name="Сообщение")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False, verbose_name="Прочитано")
 
     def __str__(self):
-        return self.name
+        return f"Уведомление для {self.user.username}"
+
+    class Meta:
+        verbose_name = 'Оповещение'
+        verbose_name_plural = 'Оповещения'
 
 
-class PiercingWeightOption(models.Model):
+class CartAnalytics(models.Model):
     """
-    Модель для представления вариаций пирсингов по весу с дополнительной ценой.
+    Модель для аналитики корзины.
     """
-    piercing = models.ForeignKey(Piercing, related_name='weight_options', on_delete=models.CASCADE, verbose_name="Пирсинг")
-    weight = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Вес (г)")
-    extra_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Дополнительная цена")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_analytics", null=True, blank=True)
+    cart_data = models.JSONField(default=dict, verbose_name="Данные корзины")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
 
     def __str__(self):
-        return f"{self.piercing.name} - {self.weight} г"
+        return f"Аналитика корзины ({self.created_at})"
 
-
-class CartItem(models.Model):
-    """
-    Модель для представления отдельного товара в корзине.
-    """
-    piercing = models.ForeignKey(Piercing, on_delete=models.CASCADE, verbose_name="Пирсинг")
-    weight_option = models.ForeignKey(PiercingWeightOption, on_delete=models.CASCADE, verbose_name="Весовая опция", null=True, blank=True)
-    quantity = models.PositiveIntegerField(default=1, verbose_name="Количество")
-
-    def get_price(self):
-        """
-        Рассчитывает цену товара с учетом выбранного веса и скидок.
-        """
-        base_price = self.piercing.get_discounted_price()
-        extra_price = self.weight_option.extra_price if self.weight_option else 0
-        return (base_price + extra_price) * self.quantity
-
-    def __str__(self):
-        return f"{self.piercing.name} - {self.quantity} шт."
-
-
-class Cart(models.Model):
-    """
-    Модель для представления корзины покупателя.
-    """
-    items = models.ManyToManyField(CartItem, verbose_name="Товары")
-
-    def get_total_price(self):
-        """
-        Рассчитывает итоговую сумму корзины с учетом скидок.
-        """
-        return sum(item.get_price() for item in self.items.all())
-
-    def get_total_quantity(self):
-        """
-        Рассчитывает общее количество товаров в корзине.
-        """
-        return sum(item.quantity for item in self.items.all())
-
-    def __str__(self):
-        return f"Корзина ({self.get_total_quantity()} товаров)"
+    class Meta:
+        verbose_name = 'Аналитика'
+        verbose_name_plural = 'Аналитики'
