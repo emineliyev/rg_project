@@ -1,9 +1,14 @@
 from django.contrib import admin
-from .models import Product, Category, Material, Image
+from .models import Product, Category, Material, Image, WeightOption
 
 
 class ImageInline(admin.TabularInline):
     model = Image
+    extra = 1
+
+
+class WeightOptionInline(admin.TabularInline):
+    model = WeightOption
     extra = 1
 
 
@@ -29,7 +34,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'material')
     search_fields = ('name', 'article')
     prepopulated_fields = {'slug': ('name',)}
-    inlines = [ImageInline]
+    inlines = [ImageInline, WeightOptionInline]
 
     @admin.display(description='Endirimli qiymət')
     def discounted_price(self, obj):

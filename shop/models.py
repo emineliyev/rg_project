@@ -118,6 +118,25 @@ class Product(models.Model):
         verbose_name_plural = 'Məhsullar'
 
 
+class WeightOption(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='weight_options', verbose_name='Məhsul'
+    )
+    weight = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Çəki (q)')
+    carat = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Karat')
+    size = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Ölçü (mm)')
+    price_modifier = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name='Qiymət artırıcı'
+    )
+
+    def __str__(self):
+        return f"{self.product.name} - {self.weight}g (+{self.price_modifier}₼)"
+
+    class Meta:
+        verbose_name = 'Çəki seçimi'
+        verbose_name_plural = 'Çəki seçimləri'
+
+
 class Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='')
     image = models.ImageField(upload_to='images/', verbose_name='')
