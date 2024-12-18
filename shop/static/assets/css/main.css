@@ -1,0 +1,20 @@
+.old-price {
+    text-decoration-line: line-through;
+}
+/*.tm-product-badges span{*/
+/*    background-color: #F3BA58;*/
+/*}*/
+
+.nice-select {
+    margin: 0 0 10px 0;
+}
+
+.cart-quantity-input {
+    max-width: 60px;
+    min-width: 60px;
+}
+
+.counter {
+    max-height: 38px;
+    margin-left: 5px;
+}

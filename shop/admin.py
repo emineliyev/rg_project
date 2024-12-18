@@ -28,7 +28,7 @@ class MaterialAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'article', 'price', 'discount', 'discounted_price', 'discount_amount',
-        'quantity_in_stock', 'is_in_stock'
+        'quantity_in_stock', 'weight_options_display', 'is_in_stock'
     )
     list_editable = ('price', 'discount', 'quantity_in_stock')
     list_filter = ('category', 'material')
@@ -47,3 +47,21 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(description='Stokda var')
     def is_in_stock(self, obj):
         return "Var" if obj.is_in_stock else "Yoxdur"
+
+    @admin.display(description="Çəki seçimləri")
+    def weight_options_display(self, obj):
+        """
+        Отображает все опции веса и их модификаторы цен для продукта.
+        """
+        """
+        Məhsul üçün bütün çəki seçimlərini və onların qiymət dəyişdiricilərini göstərir.
+        """
+        """
+        Displays all weight options and their price modifiers for the product.
+        """
+        options = obj.weight_options.all()
+        if options.exists():
+            return ", ".join(
+                [f"{opt.weight} г (+{opt.price_modifier}₼)" for opt in options]
+            )
+        return "Seçim yoxdur"

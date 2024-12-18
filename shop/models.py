@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from datetime import timedelta
+
+from django.urls import reverse
+from django.utils.timezone import now
 
 
 class Category(models.Model):
@@ -47,8 +51,12 @@ class Product(models.Model):
                                    verbose_name='Endirim (%)')
     quantity_in_stock = models.PositiveSmallIntegerField(
         verbose_name='Stokda olan miqdar')
+    popularity = models.PositiveIntegerField(default=0, verbose_name="Популярность")
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə edilib')
     update_at = models.DateTimeField(auto_now=True, verbose_name='Yenilənib')
+
+    # def get_absolute_url(self):
+    #     return reverse('product_detail', kwargs={'slug': self.slug})
 
     @property
     def discounted_price(self):
@@ -94,24 +102,22 @@ class Product(models.Model):
         """
         return self.quantity_in_stock > 0
 
-    def clean(self):
-        """
-        Дополнительная валидация модели.
-        Убедимся, что скидка и цена согласованы.
-        """
-        """
-        Əlavə model təsdiqi.
-        Endirim və qiymətin razılaşdırıldığına əmin olaq.
-        """
-        """
-        Additional model validation.
-        Make sure the discount and price are consistent.
-        """
-        if self.price <= 0:
-            raise ValidationError('Qiymət 0-dan böyük olmalıdır.')
-
     def __str__(self):
         return f"{self.name} ({self.article})"
+
+    @property
+    def is_new(self):
+        """
+        Проверяет, является ли товар новым (например, добавлен в последние 30 дней).
+        """
+        return now() - self.create_at <= timedelta(days=30)
+
+    @property
+    def is_popular(self):
+        """
+        Проверяет, является ли товар популярным (например, имеет популярность выше 100).
+        """
+        return self.popularity > 100
 
     class Meta:
         verbose_name = 'Məhsul'
@@ -126,11 +132,11 @@ class WeightOption(models.Model):
     carat = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Karat')
     size = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Ölçü (mm)')
     price_modifier = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name='Qiymət artırıcı'
+        max_digits=10, decimal_places=2, verbose_name='Çəkiyə görə qiymət'
     )
 
     def __str__(self):
-        return f"{self.product.name} - {self.weight}g (+{self.price_modifier}₼)"
+        return f"{self.product.name} - {self.weight}q (+{self.price_modifier}₼)"
 
     class Meta:
         verbose_name = 'Çəki seçimi'
@@ -138,7 +144,7 @@ class WeightOption(models.Model):
 
 
 class Image(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images', verbose_name='')
     image = models.ImageField(upload_to='images/', verbose_name='')
 
     def __str__(self):

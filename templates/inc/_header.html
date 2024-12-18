@@ -57,7 +57,7 @@
             <div class="tm-mobilenav"></div>
             <div class="row align-items-center">
                 <div class="col-lg-3 col-6 order-1 order-lg-1">
-                    <a href="index.html" class="tm-header-logo">
+                    <a href="{% url 'shop:index' %}" class="tm-header-logo">
                         <img src="{% static 'assets/images/logo.png' %}" alt="surose">
                     </a>
                 </div>
@@ -69,9 +69,19 @@
                 </div>
                 <div class="col-lg-3 col-6 order-2 order-lg-3">
                     <ul class="tm-header-icons">
-                        <li><a href="wishlist.html"><i
-                                class="ion-android-favorite-outline"></i><span>0</span></a></li>
-                        <li><a href="cart.html"><i class="ion-bag"></i><span>0</span></a></li>
+                        <li><a href="wishlist.html"><i class="ion-android-favorite-outline"></i><span>0</span></a></li>
+                        
+                        <li><a href="{% url 'cart:cart_detail' %}">
+                            <i class="ion-bag"></i>
+                            {% with total_items=cart|length %}
+                                {% if total_items > 0 %}
+                                	<span>{{ total_items }}</span>
+                                    {% else %}
+                                    <span>0</span>
+                                {% endif %}
+                            {% endwith %}
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -84,7 +94,7 @@
         <div class="container">
             <nav class="tm-header-nav">
                 <ul>
-                    <li><a href="index.html">Əsas səhifə</a></li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
                     <li><a href="about.html">Haqqımızda</a></li>
                     <li class="tm-header-nav-megamenu"><a href="index.html">Məhsullar</a>
 

@@ -1,7 +1,7 @@
 /*
  * %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  *
- * Template Name: Surose - Jewelry eCommerce HTML Template  
+ * Template Name: Surose - Jewelry eCommerce HTML Template
  * Template URI: https://thememarch.com/demo/html/surose/
  * Description: Surose is a fully responsive Jewelry eCommerce HTML template which comes with the unique and clean design. It built with latest bootstrap 4 framework which makes the template fully customizable. This template is mobile responsive. Design for all kind of Jewellery store.
  * Author: Thememarch
@@ -62,7 +62,7 @@
 
         /* Nice Select */
         niceSelectActive: function () {
-            $('select').niceSelect();
+            $('select').not('#weightOptions').niceSelect();
         },
 
 
@@ -563,7 +563,7 @@
                 // Get the messages div.
                 var formMessages = $('.form-messages');
 
-
+                // TODO: The rest of the code will go here...
 
                 // Set up an event listener for the contact form.
                 $(form).submit(function (event) {
