@@ -6,7 +6,13 @@ from shop.models import Product
 class Cart:
     def __init__(self, request):
         """
+        Səbət işə salınır. Məlumat sessiyada saxlanılır.
+        """
+        """
         Инициализация корзины. Данные хранятся в сессии.
+        """
+        """
+        Initializing the basket. Data is stored in the session.
         """
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
@@ -17,7 +23,13 @@ class Cart:
 
     def add(self, product, weight_option=None, quantity=1, override_quantity=False):
         """
-        Добавить продукт в корзину или обновить его количество.
+        Səbətə məhsul əlavə edir və ya onun miqdarını yeniləyir.
+        """
+        """
+        Добавляет продукт в корзину или обновляет его количество.
+        """
+        """
+        Adds a product to the cart or updates its quantity.
         """
         product_id = str(product.id)
         if product_id not in self.cart:
@@ -27,16 +39,18 @@ class Cart:
                 'base_price': str(product.discounted_price),  # Базовая цена товара
                 'weight_option': None
             }
-
-        # Устанавливаем параметры веса и его модификатор
+        # Çəki parametrlərini və onun dəyişdiricisini təyin edir
+        # Устанавливает параметры веса и его модификатор
+        # Sets the weight parameters and its modifier
         if weight_option:
             self.cart[product_id]['weight_option'] = {
                 'id': weight_option.id,
                 'weight': str(weight_option.weight),
                 'price_modifier': str(weight_option.price_modifier)
             }
-
-        # Устанавливаем итоговую цену (базовая цена + модификатор)
+        # Son qiyməti təyin edir (əsas qiymət + dəyişdirici)
+        # Устанавливает итоговую цену (базовая цена + модификатор)
+        # Sets the final price (base price + modifier)
         if weight_option:
             total_price = Decimal(product.discounted_price) + Decimal(weight_option.price_modifier)
         else:
@@ -44,7 +58,9 @@ class Cart:
 
         self.cart[product_id]['price'] = str(total_price)  # Сохраняем финальную цену с учетом веса
 
-        # Обновляем количество
+        # Miqdarı yeniləyir
+        # Обновляет количество
+        # Updates the quantity
         if override_quantity:
             self.cart[product_id]['quantity'] = quantity
         else:
@@ -61,7 +77,13 @@ class Cart:
 
     def remove(self, product, weight_option=None):
         """
-        Удалить продукт из корзины.
+        Məhsulu səbətdən çıxarır.
+        """
+        """
+        Удаляет продукт из корзины.
+        """
+        """
+        Removes the product from the cart.
         """
         product_id = str(product.id)
         key = product_id
@@ -74,14 +96,26 @@ class Cart:
 
     def clear(self):
         """
-        Очистить корзину.
+        Zibil qutusunu təmizləyir.
+        """
+        """
+        Очищает корзину.
+        """
+        """
+        Empties the Recycle Bin.
         """
         self.session[settings.CART_SESSION_ID] = {}
         self.session.modified = True
 
     def get_total_price(self):
         """
-        Рассчитать общую стоимость товаров в корзине.
+        Səbətdəki məhsulların ümumi dəyərini hesablayır.
+        """
+        """
+        Рассчитывает общую стоимость товаров в корзине.
+        """
+        """
+        Calculates the total cost of items in the cart.
         """
         total = Decimal(0)
         for item in self.cart.values():
@@ -90,6 +124,9 @@ class Cart:
         return total
 
     def __iter__(self):
+        """
+        Modeldən məlumat əlavə edərək səbətdəki elementləri döndərir.
+        """
         """
         Итерация по товарам в корзине, добавляя данные из модели.
         """
@@ -103,6 +140,12 @@ class Cart:
 
     def __len__(self):
         """
-        Подсчитать общее количество товаров в корзине.
+        Səbətdəki məhsulların ümumi sayını təmizləyir.
+        """
+        """
+        Подчищает общее количество товаров в корзине.
+        """
+        """
+        Clears the total number of items in the cart.
         """
         return sum(item['quantity'] for item in self.cart.values())

@@ -45,9 +45,15 @@ def cart_detail(request):
 def cart_clear(request):
     cart = request.session.get('cart')
     if cart:
+        # Səbəti sessiyadan çıxardır
         # Удаляем корзину из сессии
+        # Remove the basket from the session
         del request.session['cart']
-        # Сбрасываем общую сумму, если она сохранена отдельно
+        # Ayrılıqda saxlanan, cəmi sıfırlayır
+        # Сбрасывает общую сумму, если она сохранена отдельно
+        # Resets the total amount if it is stored separately
         request.session['cart_total'] = 0
-    # Перенаправляем на страницу корзины или другую страницу
+    # Səbət səhifəsinə və ya başqa səhifəyə yönləndirir
+    # Перенаправляет на страницу корзины или другую страницу
+    # Redirects to the cart page or another page
     return redirect('cart:cart_detail')

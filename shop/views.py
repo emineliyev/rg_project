@@ -1,15 +1,9 @@
-import json
-from django.views.decorators.http import require_POST
 from django.utils.timezone import now
 from datetime import timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render, redirect
-from cart.cart import Cart
 from django.views.generic import ListView, DetailView
-
 from cart.forms import CartAddProductForm
-from shop.models import Product, WeightOption
+from shop.models import Product
 
 
 class ProductListView(LoginRequiredMixin, ListView):
