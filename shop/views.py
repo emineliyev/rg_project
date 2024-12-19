@@ -6,7 +6,7 @@ from cart.forms import CartAddProductForm
 from shop.models import Product
 
 
-class ProductListView(LoginRequiredMixin, ListView):
+class HomeProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'shop/index.html'
 
@@ -27,4 +27,15 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         context['images'] = self.object.images.all()
         context['weight_options'] = self.object.weight_options.all()
         context['cart_product_form'] = CartAddProductForm()
+        return context
+
+
+class ProductListView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'shop/products.html'
+    context_object_name = 'products'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['popular_products'] = Product.objects.filter(popularity__gt=100)[:3]
         return context

@@ -191,15 +191,17 @@
                             <div class="tm-product-topside">
                                 <div class="tm-product-images">
                                     {% for image in new_product.images.all %}
-                                        <img src="{{ image.image.url }}"
-                                             alt="{{ image.alt_text|default:'product image' }}">
+                                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
                                     {% endfor %}
                                 </div>
                                 <ul class="tm-product-actions">
-                                    <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a></li>
                                     <li>
-                                        <button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i>
-                                        </button>
+                                        <form method="post" action="{% url 'cart:cart_add' new_product.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="tm-button ">
+                                                <i class="ion-android-cart"></i> Səbətə at</button>
+                                        </form>
                                     </li>
                                     <li><a href="#"><i class="ion-heart"></i></a></li>
                                 </ul>
@@ -213,7 +215,7 @@
                                 </div>
                             </div>
                             <div class="tm-product-bottomside">
-                                <h6 class="tm-product-title"><a href="product-details.html">{{ new_product.name }}</a>
+                                <h6 class="tm-product-title"><a href="{% url 'shop:product_detail' new_product.id %}">{{ new_product.name }}</a>
                                 </h6>
                                 <div class="tm-ratingbox">
                                     <span class="is-active"><i class="ion-android-star-outline"></i></span>
@@ -233,8 +235,7 @@
                                     <ul class="tm-product-actions">
                                         <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a></li>
                                         <li>
-                                            <button data-fancybox data-src="#tm-product-quickview"><i
-                                                    class="ion-eye"></i></button>
+                                            <button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i></button>
                                         </li>
                                         <li><a href="#"><i class="ion-heart"></i></a></li>
                                     </ul>
@@ -247,7 +248,7 @@
 
             </div>
             <div class="tm-product-loadmore text-center mt-50">
-                <a href="products.html" class="tm-button">Bütün Məhsullar</a>
+                <a href="{% url 'shop:products' %}" class="tm-button">Bütün Məhsullar</a>
             </div>
         </div>
     </div>
