@@ -3,7 +3,8 @@
 {% block title %}Bütün məhsullar{% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
-    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey"
+         data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
         <div class="container">
             <div class="tm-breadcrumb">
                 <h2>Bütün məhsullar</h2>
@@ -42,72 +43,107 @@
                         <div class="row mt-30-reverse">
                             <!-- Single Product -->
                             {% for product in products %}
-                            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 mt-50">
-                                <div class="tm-product tm-scrollanim">
-                                    <div class="tm-product-topside">
-                                        <div class="tm-product-images">
-                                            {% for image in product.images.all %}
-                                                <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
-                                            {% endfor %}
-                                        </div>
-                                        <ul class="tm-product-actions">
-                                            <li>
-                                                <form method="post" action="{% url 'cart:cart_add' product.id %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="tm-button ">
-                                                        <i class="ion-android-cart"></i> Səbətə at
-                                                    </button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <a href="#"><i class="ion-heart"></i></a>
-                                            </li>
-                                        </ul>
-                                        <div class="tm-product-badges">
-                                            {% if product.is_new %}
-                                                <span class="tm-product-badges-new">Yeni</span>
-                                            {% endif %}
-                                            {% if product.discount > 0 %}
-                                                <span class="tm-product-badges-sale">- {{ product.discount }} %</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="tm-product-bottomside">
-                                        <h6 class="tm-product-title">
-                                            <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
-                                        </h6>
-                                        <div class="tm-ratingbox">
-                                            <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                            <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                            <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                            <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                            <span><i class="ion-android-star-outline"></i></span>
-                                        </div>
-                                        {% if product.discount > 0 %}
-                                            <span class="old-price">{{ product.price }} ₼</span>
-                                            <span class="tm-product-price">{{ product.discounted_price }} ₼</span>
-                                        {% else %}
-                                            <span class="tm-product-price">{{ product.price }} ₼</span>
-                                        {% endif %}
-                                        <div class="tm-product-content">
-                                            <p>{{ product.description }}</p>
+                                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 mt-50">
+                                    <div class="tm-product tm-scrollanim">
+                                        <div class="tm-product-topside">
+                                            <div class="tm-product-images">
+                                                {% for image in product.images.all %}
+                                                    <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
+                                                {% endfor %}
+                                            </div>
                                             <ul class="tm-product-actions">
                                                 <li>
                                                     <form method="post" action="{% url 'cart:cart_add' product.id %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="tm-button "><i class="ion-android-cart"></i> Səbətə at</button>
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        {% if product.is_in_stock < 1 %}
+                                                            <button type="submit" disabled class="btn btn-secondary">
+                                                                <i class="ion-android-cart"></i> Səbətə at
+                                                            </button>
+                                                                {% else %}
+                                                                <button type="submit" class="tm-button ">
+                                                                <i class="ion-android-cart"></i> Səbətə at
+                                                            </button>
+                                                        {% endif %}
                                                     </form>
                                                 </li>
-                                                <li><button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i></button></li>
-                                                <li><a href="#"><i class="ion-heart"></i></a></li>
+                                                <li>
+                                                    <form method="post"
+                                                          action="{% url 'wishlist:add_wish' product.id %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="tm-button ">
+                                                            <i class="ion-heart"></i>
+                                                        </button>
+                                                    </form>
+                                                </li>
                                             </ul>
+                                            {% if product.is_in_stock < 1 %}
+                                            <div class="tm-product-badges">
+                                                    <span class="tm-product-badges-soldout">Tükənib</span>
+                                            </div>
+                                            {% endif %}
+                                            <div class="tm-product-badges">
+                                                {% if product.is_new %}
+                                                    <span class="tm-product-badges-new">Yeni</span>
+                                                {% endif %}
+                                                {% if product.discount > 0 %}
+                                                    <span class="tm-product-badges-sale">- {{ product.discount }} %</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="tm-product-bottomside">
+                                            <h6 class="tm-product-title">
+                                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
+                                            </h6>
+                                            <div class="tm-ratingbox">
+                                                {% for i in "12345"|slice:":" %}
+                                                    <span class="{% if i <= product.average_rating|floatformat:0 %}is-active{% endif %}">
+                                                <i class="ion-android-star-outline"></i>
+                                            </span>
+                                                {% endfor %}
+                                            </div>
+                                            {% if product.discount > 0 %}
+                                                <span class="old-price">{{ product.price }} ₼</span>
+                                                <span class="tm-product-price">{{ product.discounted_price }} ₼</span>
+                                            {% else %}
+                                                <span class="tm-product-price">{{ product.price }} ₼</span>
+                                            {% endif %}
+                                            <div class="tm-product-content">
+                                                <p>{{ product.description }}</p>
+                                                <ul class="tm-product-actions">
+                                                    <li>
+                                                        <form method="post"
+                                                              action="{% url 'cart:cart_add' product.id %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="quantity" value="1">
+                                                            {% if product.is_in_stock < 1 %}
+                                                            <button type="submit" disabled class="btn btn-secondary">
+                                                                <i class="ion-android-cart"></i> Səbətə at
+                                                            </button>
+                                                                {% else %}
+                                                                <button type="submit" class="tm-button ">
+                                                                <i class="ion-android-cart"></i> Səbətə at
+                                                            </button>
+                                                        {% endif %}
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form method="post"
+                                                              action="{% url 'wishlist:add_wish' product.id %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="quantity" value="1">
+                                                            <button type="submit" class="tm-button ">
+                                                                <i class="ion-heart"></i>
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--// Single Product -->
+                                <!--// Single Product -->
                             {% endfor %}
                         </div>
                     </div>
@@ -126,35 +162,32 @@
                 <!-- Widgets -->
                 <div class="col-lg-3 col-12 order-2 order-lg-1">
                     <div class="widgets">
-
                         <!-- Single Widget -->
                         <div class="single-widget widget-categories">
-                            <h6 class="widget-title">Categories</h6>
+                            <h6 class="widget-title">Kateqoriyalar</h6>
                             <ul>
-                                <li><a href="products.html">Make up</a></li>
-                                <li><a href="products.html">Leapstick</a></li>
-                                <li><a href="products.html">Face Powder</a></li>
-                                <li><a href="products.html">Eyeliner</a></li>
-                                <li><a href="products.html">Maskara</a></li>
-                                <li><a href="products.html">Foundation</a></li>
+                                {% for category in categories %}
+                                    <li><a href="products.html">{{ category.name }}</a></li>
+                                {% endfor %}
                             </ul>
                         </div>
                         <!--// Single Widget -->
-
                         <!-- Single Widget -->
                         <div class="single-widget widget-pricefilter">
-                            <h6 class="widget-title">Filter by Price</h6>
+                            <h6 class="widget-title">Qiymətə görə filter</h6>
                             <div class="widget-pricefilter-inner">
-                                <div class="tm-rangeslider" data-range_min="0" data-range_max="800"
-                                    data-cur_min="200" data-cur_max="550">
+                                <div class="tm-rangeslider" data-range_min="0"
+                                     data-range_max="{{ max_salary|floatformat:0 }}"
+                                     data-cur_min="0" data-cur_max="{{ max_salary|floatformat:0 }}">
                                     <div class="tm-rangeslider-bar nst-animating"></div>
                                     <span class="tm-rangeslider-leftgrip nst-animating" tabindex="0"></span>
                                     <span class="tm-rangeslider-rightgrip nst-animating" tabindex="0"></span>
                                 </div>
                                 <div class="widget-pricefilter-actions">
-                                    <p class="widget-pricefilter-price">Price: $<span
-                                            class="tm-rangeslider-leftlabel">308</span>
-                                        - $<span class="tm-rangeslider-rightlabel">798</span></p>
+                                    <p class="widget-pricefilter-price">
+                                        Qiymət: <span class="tm-rangeslider-leftlabel">308</span> ₼ - <span
+                                            class="tm-rangeslider-rightlabel">798</span> ₼
+                                    </p>
                                     <button class="widget-pricefilter-button">Filter</button>
                                 </div>
                             </div>
@@ -165,18 +198,21 @@
                         <div class="single-widget widget-popularproduct">
                             <h6 class="widget-title">Populyar Məhsular</h6>
                             <ul>
-                            {% for popular_product in popular_products %}
+                                {% for popular_product in popular_products %}
                                     <li>
-                                            <!-- Выводим первую картинку -->
-                                            <a href="{% url 'shop:product_detail' popular_product.id %}" class="widget-popularproduct-image">
-                                                {% for image in popular_product.images.all %}
-                                                    {% if forloop.first %}
-                                                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </a>
+                                        <a href="{% url 'shop:product_detail' popular_product.id %}"
+                                           class="widget-popularproduct-image">
+                                            {% for image in popular_product.images.all %}
+                                                {% if forloop.first %}
+                                                    <img src="{{ image.image.url }}"
+                                                         alt="{{ image.alt_text|default:'product image' }}">
+                                                {% endif %}
+                                            {% endfor %}
+                                        </a>
                                         <div class="widget-popularproduct-content">
-                                            <h6><a href="{% url 'shop:product_detail' popular_product.id %}">{{ popular_product.name }}</a></h6>
+                                            <h6>
+                                                <a href="{% url 'shop:product_detail' popular_product.id %}">{{ popular_product.name }}</a>
+                                            </h6>
                                             {% if popular_product.discount > 0 %}
                                                 <span class="old-price">{{ popular_product.price }} ₼</span>
                                                 <span class="tm-product-price">{{ popular_product.discounted_price }} ₼</span>
@@ -189,19 +225,6 @@
                             </ul>
                         </div>
                         <!--// Single Widget -->
-
-                        <!-- Single Widget -->
-                        <div class="single-widget widget-sizes">
-                            <h6 class="widget-title">Sizes</h6>
-                            <ul>
-                                <li><a href="products.html">Small Size</a></li>
-                                <li><a href="products.html">Medium Size</a></li>
-                                <li><a href="products.html">Large Size</a></li>
-                                <li><a href="products.html">Extra Large Size</a></li>
-                            </ul>
-                        </div>
-                        <!--// Single Widget -->
-
                     </div>
                 </div>
                 <!--// Widgets -->

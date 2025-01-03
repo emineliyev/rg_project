@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,6 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
+    'wishlist.apps.WishlistConfig',
+    'account.apps.AccountConfig',
+    'orders.apps.OrdersConfig',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -30,6 +35,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # DEBUG-TOOLBAR
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -48,6 +56,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart',
+                'wishlist.context_processors.wishlist',
             ],
         },
     },
@@ -96,6 +105,25 @@ STATICFILES_DIRS = [
 ]
 
 CART_SESSION_ID = 'cart'
+WISHLIST_SESSION_ID = 'wishlist'
 
-
+AUTH_USER_MODEL = 'account.Account'
+LOGIN_REDIRECT_URL = 'shop:index'
+LOGIN_URL = 'account:login'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'emineliyev87@gmail.com'
+EMAIL_HOST_PASSWORD = 'fmjejbwgajmvgfzx'
+DEFAULT_FROM_EMAIL = 'emineliyev87@gmail.com'
+ADMINS = [('Admin', 'emineliyev87@gmail.com')]
+
+# DEBUG-TOOLBAR
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

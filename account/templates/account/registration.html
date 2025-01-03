@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	Qeydiyyat
+{% endblock %}
+{% block content %}
+<!-- Breadcrumb Area -->
+<div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="container">
+        <div class="tm-breadcrumb">
+            <h2>Login & Register</h2>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li>Login & Register</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--// Breadcrumb Area -->
+<!-- Login Register Area -->
+    <div class="tm-section tm-login-register-area bg-white tm-padding-section">
+    <div class="container">
+        <div class="row">
+            <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <form class="tm-form tm-register-form" method="post">
+                    {% csrf_token %}
+                    <h4>Hesab yaradın</h4>
+                    <p>Xoş gəldiniz! Hesab üçün qeydiyyatdan keçin</p>
+                    <div class="tm-form-inner">
+                        <div class="tm-form-field">
+                            <label for="{{ form.name.id_for_label }}">İstifadəçi adı</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="tm-form-field">
+                            <label for="{{ form.email.id_for_label }}">E-poçt ünvanı</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="tm-form-field">
+                            <label for="{{ form.password1.id_for_label }}">Şifrə</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="tm-form-field">
+                            <div>
+                                {{ form.password2 }}
+                                <label for="{{ form.password2.id_for_label }}">Şifrəni göstər</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="register-terms" name="register-terms">
+                                <label for="register-terms">
+                                    Mən vebsaytın <a href=""> şərtlərini</a> oxudum və razılaşdım
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tm-form-field">
+                            <button type="submit" class="tm-button">Qeydiyyatdan keçin</button>
+                        </div>
+                    </div>
+                </form>
+                {% if form.errors %}
+                    <div class="alert alert-danger mt-3">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--// Login Register Area -->
+{% endblock %}

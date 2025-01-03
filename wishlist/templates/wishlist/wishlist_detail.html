@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	İstək siyahısı
+{% endblock %}
+{% block content %}
+    <!-- Breadcrumb Area -->
+        <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="container">
+        <div class="tm-breadcrumb">
+            <h2>Shopping Cart</h2>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li>Shopping Cart</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    <!--// Breadcrumb Area -->
+
+    <!-- Wishlist Area -->
+        <div class="tm-section wishlist-area bg-white tm-padding-section">
+        <div class="container">
+            <!-- Wishlist Table -->
+            <div class="tm-wishlist-table table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead>
+            <tr>
+                <th class="tm-wishlist-col-image" scope="col">Şəkil</th>
+                <th class="tm-wishlist-col-productname" scope="col">Məhsul</th>
+                <th class="tm-wishlist-col-price" scope="col">Qiymət</th>
+                <th class="tm-wishlist-col-addcart" scope="col">Şəbətə at</th>
+                <th class="tm-wishlist-col-remove" scope="col">Siz</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in wishlist %}
+            <tr>
+                <td>
+                    <a href="{% url 'shop:product_detail' item.id %}">
+                        <img src="{{ item.image }}" alt="{{ item.name }}">
+                    </a>
+                </td>
+                <td><a href="{% url 'shop:product_detail' item.id %}">{{ item.name }}</a></td>
+                <td>{{ item.price }}</td>
+                <td>
+
+                    <form method="post" action="{% url 'cart:cart_add' item.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        {% if item.is_in_stock < 1 %}
+                            <button type="submit" disabled class="btn btn-secondary">
+                                <i class="ion-android-cart"></i> Səbətə at
+                            </button>
+                                {% else %}
+                                <button type="submit" class="tm-button ">
+                                <i class="ion-android-cart"></i> Səbətə at
+                            </button>
+                        {% endif %}
+                    </form>
+
+                </td>
+                <td>
+                    <form method="post" action="{% url 'wishlist:wishlist_remove' item.id %}">
+                        {% csrf_token %}
+                        <button class="tm-wishlist-removeproduct"><i class="ion-close"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+            <!--// Wishlist Table -->
+        </div>
+    </div>
+    <!--// Wishlist Area -->
+{% endblock %}

@@ -112,12 +112,12 @@
                     arrows: false,
                     dots: false,
                     responsive: [{
-                            breakpoint: 1200,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 3
-                            }
-                        },
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 3
+                        }
+                    },
                         {
                             breakpoint: 992,
                             settings: {
@@ -149,12 +149,12 @@
                     arrows: false,
                     dots: false,
                     responsive: [{
-                            breakpoint: 1200,
-                            settings: {
-                                slidesToShow: 2,
-                                slidesToScroll: 2
-                            }
-                        },
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 2
+                        }
+                    },
                         {
                             breakpoint: 992,
                             settings: {
@@ -186,18 +186,18 @@
                     arrows: false,
                     dots: false,
                     responsive: [{
-                            breakpoint: 1200,
-                            settings: {
-                                slidesToShow: 4,
-                                slidesToScroll: 1,
-                            }
-                        }, {
-                            breakpoint: 992,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 1,
-                            }
-                        },
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 4,
+                            slidesToScroll: 1,
+                        }
+                    }, {
+                        breakpoint: 992,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 1,
+                        }
+                    },
                         {
                             breakpoint: 768,
                             settings: {
@@ -229,12 +229,12 @@
                     dots: false,
                     pauseOnHover: false,
                     responsive: [{
-                            breakpoint: 1200,
-                            settings: {
-                                slidesToShow: 3,
-                                slidesToScroll: 1,
-                            }
-                        },
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 1,
+                        }
+                    },
                         {
                             breakpoint: 992,
                             settings: {
@@ -289,11 +289,11 @@
                     arrows: false,
                     dots: false,
                     responsive: [{
-                            breakpoint: 1200,
-                            settings: {
-                                slidesToShow: 3,
-                            }
-                        },
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 3,
+                        }
+                    },
                         {
                             breakpoint: 992,
                             settings: {
@@ -426,13 +426,41 @@
         /* Product Rating Input */
         productRatingInput: function () {
             $('.tm-ratingbox-input').each(function () {
+                const ratingInput = $('input[name="rating"]'); // Скрытое поле для рейтинга
+
                 $(this).find('span').on('mouseenter', function () {
-                    $('.tm-ratingbox-input span').addClass('is-active');
+                    // Подсвечиваем звезды при наведении
+                    $(this).addClass('is-active');
+                    $(this).prevAll('span').addClass('is-active');
                     $(this).nextAll('span').removeClass('is-active');
                 });
 
+                $(this).find('span').on('click', function () {
+                    // Устанавливаем рейтинг при клике
+                    const rating = $(this).index() + 1; // Получаем индекс звезды (1-5)
+                    ratingInput.val(rating); // Устанавливаем значение в скрытое поле
+
+                    // Подсвечиваем звезды на основе выбора
+                    $(this).addClass('is-selected');
+                    $(this).prevAll('span').addClass('is-selected');
+                    $(this).nextAll('span').removeClass('is-selected');
+                });
+
+                // Сбрасываем подсветку при выходе курсора
+                $(this).on('mouseleave', function () {
+                    $(this).find('span').removeClass('is-active'); // Убираем подсветку при наведении
+                    const selectedRating = ratingInput.val(); // Текущий выбранный рейтинг
+                    $(this).find('span').each(function (index) {
+                        if (index < selectedRating) {
+                            $(this).addClass('is-selected');
+                        } else {
+                            $(this).removeClass('is-selected');
+                        }
+                    });
+                });
             });
         },
+
 
         /* Product Quality Box */
         productQuantityBox: function () {
@@ -475,10 +503,10 @@
             var controller = new ScrollMagic.Controller();
             $('.tm-scrollanim').each(function (i) {
                 new ScrollMagic.Scene({
-                        triggerElement: this,
-                        triggerHook: 0.8,
-                        reverse: false,
-                    })
+                    triggerElement: this,
+                    triggerHook: 0.8,
+                    reverse: false,
+                })
                     .setClassToggle(this, 'scrollanim-action')
                     .addTo(controller);
             });
@@ -575,10 +603,10 @@
 
                     // Submit the form using AJAX.
                     $.ajax({
-                            type: 'POST',
-                            url: $(form).attr('action'),
-                            data: formData
-                        })
+                        type: 'POST',
+                        url: $(form).attr('action'),
+                        data: formData
+                    })
 
 
                         .done(function (response) {

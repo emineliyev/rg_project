@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Sifariş
+{% endblock %}
+{% block content %}
+    <!-- Breadcrumb Area -->
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+        <div class="container">
+            <div class="tm-breadcrumb">
+                <h2>Checkout</h2>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Shop</a></li>
+                    <li>Checkout</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--// Breadcrumb Area -->
+
+    <!-- Checkout Area -->
+    <div class="tm-section tm-checkout-area bg-white tm-padding-section">
+        <div class="container">
+            <div class="tm-checkout-coupon">
+                <a href="#checkout-couponform" data-toggle="collapse"><span>Kupon kodunuz var?</span> Bura klikləyin və kodunuzu daxil edin.</a>
+                <div id="checkout-couponform" class="collapse">
+                    <form action="#" class="tm-checkout-couponform">
+                        <input type="text" id="coupon-field" placeholder="Kupon kodunu daxil edin"
+                               required="required">
+                        <button type="submit" class="tm-button">Təstiq edin</button>
+                    </form>
+                </div>
+            </div>
+
+            <form class="tm-form tm-checkout-form" method="post">
+            {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h4 class="small-title">ÖDƏNİŞ MƏLUMATLARI</h4>
+
+                        <!-- Billing Form -->
+                        <div class="tm-checkout-billingform">
+                            <div class="tm-form-inner">
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.first_name.id_for_label }}">Ad*</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.last_name.id_for_label }}">Soyad*</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.fin_code.id_for_label }}">Fin kod</label>
+                                    {{ form.fin_code }}
+                                </div>
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.email.id_for_label }}">E-poçt</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <label for="{{ form.phone_number.id_for_label }}">Telefon</label>
+                                    {{ form.phone_number }}
+                                </div>
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.country.id_for_label }}">Ölkə</label>
+                                    {{ form.country }}
+                                </div>
+                                <div class="tm-form-field tm-form-fieldhalf">
+                                    <label for="{{ form.city.id_for_label }}">Şəhər</label>
+                                    {{ form.city }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <label for="{{ form.address.id_for_label }}">Ünvan</label>
+                                    {{ form.address }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <label for="{{ form.postal_code.id_for_label }}">Poçt kodu</label>
+                                    {{ form.postal_code }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <input type="checkbox" name="billform-dirrentswitch"
+                                           id="billform-dirrentswitch">
+                                    <label for="billform-dirrentswitch"><b>Ship to another address</b></label>
+                                </div>
+                            </div>
+                        </div>
+                        <!--// Billing Form -->
+
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="tm-checkout-orderinfo">
+                            <div class="table-responsive">
+                                <table class="table table-borderless tm-checkout-ordertable">
+                                    <thead>
+                                    <tr>
+                                        <th>MƏHSUL</th>
+                                        <th>CƏMİ</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in cart %}
+                                    <tr>
+                                        <td>
+                                            {{ item.product.name }}
+                                            <span class="old-price">{{ item.product.price }} ₼</span>
+                                            {% if item.product.discount > 0 %}
+                                                {{ item.product.discounted_price }} ₼
+                                                {% else %}
+                                                {{ item.product.price }} ₼
+                                            {% endif %}
+                                            * {{ item.quantity }}
+                                        </td>
+                                        <td>
+                                            {{ item.total_price }} ₼
+                                            <p class="text-danger">
+                                                {% if item.weight_option %}
+                                                <small>+ Çəki qiyməti: ( {{ item.weight_option.weight }} q ) {{ item.weight_option.price_modifier }} ₼</small>
+                                                {% endif %}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr class="tm-checkout-subtotal">
+                                        <td>Endirim</td>
+                                        <td>- {{ total_discount }} ₼</td>
+                                    </tr>
+                                    <tr class="tm-checkout-shipping">
+                                        <td>(+) Çatdırılma haqqı</td>
+                                        <td>0 ₼</td>
+                                    </tr>
+                                    <tr class="tm-checkout-total">
+                                        <td>CƏMİ</td>
+                                        <td>{{ cart.get_total_price }} ₼</td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <div class="tm-checkout-payment">
+                                <h4>Ödəniş metodunu seçin</h4>
+                                <div class="tm-form-inner">
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method"
+                                               id="checkout-payment-banktransfer">
+                                        <label for="checkout-payment-banktransfer">Birbaşa Bank köçürməsi</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <p>Hazırda bu üsül keçərli deyil.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method"
+                                               id="checkout-payment-checkpayment" checked="checked">
+                                        <label for="checkout-payment-checkpayment">Kartdan karta</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <p>Please send a check to Store Name, Store Street, Store Town,
+                                                Store State / County, Store Postcode.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method"
+                                               id="checkout-payment-cashondelivery">
+                                        <label for="checkout-payment-cashondelivery">Nəğd ödəniş</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <p>Məhsul qapıya şatdırıldığı zaman kuryerə.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method"
+                                               id="checkout-payment-paypal">
+                                        <label for="checkout-payment-paypal">PayPal</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <p>Hazırda bu üsül keçərli deyil.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method"
+                                               id="checkout-payment-creditcard">
+                                        <label for="checkout-payment-creditcard">Bank kartı</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <p>Hazırda bu üsül keçərli deyil.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tm-checkout-submit">
+                                <p>Şəxsi məlumatlarınız sifarişinizi emal etmək, bu veb-saytda təcrübənizi dəstəkləmək və məxfilik siyasətimizdə təsvir olunan digər məqsədlər üçün istifadə olunacaq.</p>
+                                <div class="tm-form-inner">
+                                    <div class="tm-form-field">
+                                        <input type="checkbox" name="checkout-read-terms" id="checkout-read-terms" onclick="toggleButton()">
+                                        <label for="checkout-read-terms">Mən vebsaytın şərtlərini oxudum və razılaşdım</label>
+                                    </div>
+                                    <div class="tm-form-field">
+                                        <button type="submit" class="tm-button ml-auto" id="submit-button" disabled>Sifariş verin</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!--// Checkout Area -->
+
+    <script>
+    function toggleButton() {
+        const checkbox = document.getElementById('checkout-read-terms');
+        const submitButton = document.getElementById('submit-button');
+        submitButton.disabled = !checkbox.checked;
+    }
+</script>
+{% endblock %}

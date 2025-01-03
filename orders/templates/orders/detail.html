@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}
+    Sifariş
+{% endblock %}
+{% block content %}
+    <!-- Breadcrumb Area -->
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+        <div class="container">
+            <div class="tm-breadcrumb">
+                <h2>Hesabınız</h2>
+                <ul>
+                    <li><a href="index.html">Əsas səhifə</a></li>
+                    <li>Hesabım</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--// Breadcrumb Area -->
+    <div class="tm-section tm-checkout-area bg-white tm-padding-section">
+        <div class="container">
+            <table class="table table-bordered mb-0">
+                <thead>
+                <tr>
+                    <th class="tm-myaccount-orders-col-id">Məhsul</th>
+                    <th class="tm-myaccount-orders-col-id">Çəki</th>
+                    <th class="tm-myaccount-orders-col-id">Qiymət</th>
+                    <th class="tm-myaccount-orders-col-id">Miqdar</th>
+                    <th class="tm-myaccount-orders-col-id">Cəmi</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>
+                            {% if item.weight_option %}
+                                {{ item.weight_option.weight }} q
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ item.price }} ₼</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.quantity|multiply:item.price }} ₼</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <h3 class="mt-3 text-secondary">Cəmi məbləğ: {{ total_price }} ₼</h3>
+        </div>
+    </div>
+{% endblock %}

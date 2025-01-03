@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Product, Category, Material, Image, WeightOption
+from django.utils.html import format_html
+
+from .models import Product, Category, Material, Image, WeightOption, Comment
 
 
 class ImageInline(admin.TabularInline):
@@ -28,7 +30,7 @@ class MaterialAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'article', 'price', 'discount', 'discounted_price', 'discount_amount',
-        'quantity_in_stock', 'weight_options_display', 'is_in_stock'
+        'quantity_in_stock', 'weight_options_display', 'is_in_stock', 'product_rating', 'display_image'
     )
     list_editable = ('price', 'discount', 'quantity_in_stock')
     list_filter = ('category', 'material')
@@ -36,9 +38,22 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ImageInline, WeightOptionInline]
 
+    @admin.display(description='Изображение')
+    def display_image(self, obj):
+        # Отображаем первое изображение из связанных
+        first_image = obj.images.first()
+        if first_image:
+            return format_html('<img src="{}" width="50" height="50" style="object-fit: cover;"/>',
+                               first_image.image.url)
+        return "Нет изображения"
+
     @admin.display(description='Endirimli qiymət')
     def discounted_price(self, obj):
         return obj.discounted_price
+
+    @admin.display(description='Reytinq')
+    def product_rating(self, obj):
+        return round(obj.average_rating(), 1)  # Округляем до 1 десятичного знака
 
     @admin.display(description='Endirim məbləği')
     def discount_amount(self, obj):
@@ -65,3 +80,9 @@ class ProductAdmin(admin.ModelAdmin):
                 [f"{opt.weight} г (+{opt.price_modifier}₼)" for opt in options]
             )
         return "Seçim yoxdur"
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'rating')
+    list_filter = ('rating',)

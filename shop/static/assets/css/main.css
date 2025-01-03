@@ -1,6 +1,7 @@
 .old-price {
     text-decoration-line: line-through;
 }
+
 /*.tm-product-badges span{*/
 /*    background-color: #F3BA58;*/
 /*}*/
@@ -17,4 +18,169 @@
 .counter {
     max-height: 38px;
     margin-left: 5px;
+}
+
+.toast-message {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-width: 300px;
+    animation: slide-in 0.3s ease-out;
+}
+
+.toast-message.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.toast-message.alert-error,
+.toast-message.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.toast-message.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.toast-timer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: shrink 5s linear forwards;
+    width: 100%;
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shrink {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0;
+    }
+}
+
+
+.video-container {
+    position: absolute;
+    top: 20px;
+    left: 35px;
+    width: 200px; /* Начальный размер */
+    height: auto; /* Пропорциональная высота */
+    cursor: grab;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease; /* Плавное изменение размеров */
+    background: #000;
+}
+
+.video-container.dragging {
+    opacity: 0.8;
+    cursor: grabbing;
+}
+
+.video-container.expanded {
+    width: 600px; /* Размер в увеличенном состоянии */
+    height: auto;
+    cursor: default; /* Убираем grab в увеличенном состоянии */
+}
+
+/* Видео внутри контейнера */
+.video-container video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Кнопка закрытия */
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #1F584C; /* Основной цвет кнопки */
+    color: #fff; /* Цвет текста */
+    border: none; /* Убираем границу */
+    border-radius: 50%; /* Делаем кнопку круглой */
+    width: 30px; /* Размер кнопки */
+    height: 30px;
+    font-size: 16px; /* Размер шрифта */
+    display: flex; /* Используем Flexbox */
+    align-items: center; /* Вертикальное выравнивание по центру */
+    justify-content: center; /* Горизонтальное выравнивание по центру */
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Глубокая тень для объема */
+    transition: all 0.3s ease; /* Плавные изменения при наведении */
+}
+
+.close-button:hover {
+    background: #14543F; /* Темнее при наведении */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Усиление тени при наведении */
+}
+
+.close-button:active {
+    background: #0E3A2D; /* Ещё темнее при нажатии */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Уменьшение тени */
+    transform: scale(0.95); /* Небольшое уменьшение при нажатии */
+}
+
+.close-button:hover {
+    background: #000;
+}
+
+
+.tm-ratingbox-input {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.tm-ratingbox-input .star {
+    font-size: 24px;
+    color: #ccc;
+}
+
+.tm-ratingbox-input .star.is-active {
+    color: #1F584C;
+}
+
+.tm-ratingbox-input .star.is-selected {
+    color: #1F584C;
+}
+
+
+.avatar-comment {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #f0f0f0; /* Фоновый цвет */
+    font-weight: bold; /* Сделать текст жирным */
+    color: #1F584C;
 }

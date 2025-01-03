@@ -3771,7 +3771,7 @@ button.tm-videobutton img {
 .tm-product-badges span.tm-product-badges-soldout {
   left: auto;
   right: 0;
-  background: #000000;
+  background: #d33e3e;
 }
 
 .tm-product-badges .tm-product-badges-new + .tm-product-badges-sale {

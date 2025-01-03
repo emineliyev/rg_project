@@ -27,6 +27,7 @@
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-sm-10 col-12">
                                 <div class="tm-prodetails-images">
+
                                     <div class="tm-prodetails-largeimages">
                                         {% for image in images %}
                                             <div class="tm-prodetails-largeimage">
@@ -37,6 +38,18 @@
                                             </div>
                                         {% endfor %}
                                     </div>
+
+                                    <!-- Отдельное видео -->
+                                    {% if video %}
+                                        <div id="draggable-video" class="video-container">
+                                            <video id="video-element" controls muted autoplay loop playsinline>
+                                                <source src="{{ video.url }}" type="video/mp4">
+                                                Ваш браузер не поддерживает тег video.
+                                            </video>
+                                        </div>
+
+                                    {% endif %}
+
                                     <div class="tm-prodetails-thumbnails">
                                         {% for image in images %}
                                             <div class="tm-prodetails-thumbnail">
@@ -44,6 +57,7 @@
                                             </div>
                                         {% endfor %}
                                     </div>
+
                                 </div>
                             </div>
 
@@ -63,12 +77,13 @@
                                         </span>
 
                                     <div class="tm-ratingbox">
-                                        <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                        <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                        <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                        <span class="is-active"><i class="ion-android-star-outline"></i></span>
-                                        <span><i class="ion-android-star-outline"></i></span>
+                                        {% for i in "12345"|slice:":" %}
+                                            <span class="{% if i <= product.average_rating|floatformat:0 %}is-active{% endif %}">
+                                            <i class="ion-android-star-outline"></i>
+                                        </span>
+                                        {% endfor %}
                                     </div>
+
                                     <div class="tm-prodetails-infos">
                                         <div class="tm-prodetails-singleinfo">
                                             <b>Məhsul kodu : </b>{{ product.article }}
@@ -76,15 +91,15 @@
                                         <div class="tm-prodetails-singleinfo">
                                             <b>Kateqoriya : </b><a href="#">{{ product.category.name }}</a>
                                         </div>
-                                        <div class="tm-prodetails-singleinfo tm-prodetails-tags">
-                                            <b>Tags : </b>
-                                            <ul>
-                                                <li><a href="#">bracelets</a></li>
-                                                <li><a href="#">diamond</a></li>
-                                                <li><a href="#">ring</a></li>
-                                                <li><a href="#">necklaces</a></li>
-                                            </ul>
-                                        </div>
+{#                                        <div class="tm-prodetails-singleinfo tm-prodetails-tags">#}
+{#                                            <b>Tags : </b>#}
+{#                                            <ul>#}
+{#                                                <li><a href="#">bracelets</a></li>#}
+{#                                                <li><a href="#">diamond</a></li>#}
+{#                                                <li><a href="#">ring</a></li>#}
+{#                                                <li><a href="#">necklaces</a></li>#}
+{#                                            </ul>#}
+{#                                        </div>#}
                                         <div class="tm-prodetails-singleinfo">
                                             <b>Əlçatan : </b>
                                             <span class="color-theme">
@@ -111,20 +126,29 @@
                                             <select id="weightOptions" name="weight_option">
                                                 <option value="">Çəki seçin</option>
                                                 {% for option in weight_options %}
-                                                    <option value="{{ option.id }}" data-price-modifier="{{ option.price_modifier }}">
-                                                        {{ option.weight }} q - {{ option.carat }} K (+{{ option.price_modifier }} ₼)
+                                                    <option value="{{ option.id }}"
+                                                            data-price-modifier="{{ option.price_modifier }}">
+                                                        {{ option.weight }} q - {{ option.carat }} K
+                                                        (+{{ option.price_modifier }} ₼)
                                                     </option>
                                                 {% endfor %}
                                             </select>
                                         </div>
-
                                         <div class="tm-prodetails-quantitycart">
                                             <h6>Miqdar:</h6>
                                             <div class="tm-quantitybox">
                                                 <input type="number" name="quantity" id="quantity" value="1" min="1" required>
                                             </div>
                                             <input type="hidden" name="override" value="False">
-                                            <button type="submit" class="tm-button tm-button-dark">Səbətə at</button>
+                                            {% if product.is_in_stock < 1 %}
+                                                <button type="submit" disabled class="btn btn-secondary">
+                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                </button>
+                                            {% else %}
+                                                <button type="submit" class="tm-button ">
+                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                </button>
+                                            {% endif %}
                                         </div>
                                     </form>
                                     <p>{{ product.description }}</p>
@@ -141,21 +165,20 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="prodetails-area1-tab" data-toggle="tab"
                                    href="#prodetails-area1" role="tab" aria-controls="prodetails-area1"
-                                   aria-selected="true">Description</a>
+                                   aria-selected="true">Təsvir</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="prodetails-area2-tab" data-toggle="tab"
                                    href="#prodetails-area2" role="tab" aria-controls="prodetails-area2"
-                                   aria-selected="false">Reviews
-                                    (1)</a>
+                                   aria-selected="false">Rəylər ({{ comments_count }})</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="prodetails-content">
                             <div class="tab-pane fade show active" id="prodetails-area1" role="tabpanel"
                                  aria-labelledby="prodetails-area1-tab">
                                 <div class="tm-prodetails-description">
-                                    <h4>Product Description</h4>
-                                    <p></p>
+                                    <h4>Məhsul təsviri</h4>
+                                    <p>{{ product.description }}</p>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="prodetails-area2" role="tabpanel"
@@ -164,58 +187,71 @@
                                     <h5>1 Review For Stylist daimond ring</h5>
                                     <div class="tm-comment-wrapper mb-50">
                                         <!-- Comment Single -->
-                                        <div class="tm-comment">
-                                            <div class="tm-comment-thumb">
-                                                <img src="{% static 'assets/images/author-image-1.jpg' %}"
-                                                     alt="author image">
-                                            </div>
-                                            <div class="tm-comment-content">
-                                                <h6 class="tm-comment-authorname"><a href="#">Frida Bins</a>
-                                                </h6>
-                                                <span class="tm-comment-date">Wednesday, October 17, 2018 at4:00PM.</span>
-                                                <div class="tm-ratingbox"><span class="is-active"><i
-                                                        class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span><i class="ion-android-star-outline"></i></span>
+                                        {% for comment in comments %}
+                                            <div class="tm-comment">
+                                                <div class="tm-comment-thumb avatar-comment">
+                                                    <span>{{ comment.first_name|slice:1 }}. {{ comment.last_name|slice:1 }}.</span>
                                                 </div>
-                                                <p></p>
+                                                <div class="tm-comment-content">
+                                                    <h6 class="tm-comment-authorname">
+                                                        <a href="#">{{ comment.first_name }} {{ comment.last_name }}</a>
+                                                    </h6>
+                                                    <span class="tm-comment-date">{{ comment.create_at|date:'d.m.Y' }} </span>
+                                                    <div class="tm-ratingbox">
+                                                        {% for i in "12345"|make_list %}
+                                                            <span class="{% if forloop.counter <= comment.rating %}is-active{% endif %}">
+                                                                <i class="ion-android-star-outline"></i>
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    <p>{{ comment.text }}</p>
+
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endfor %}
                                         <!--// Comment Single -->
                                     </div>
 
-                                    <h5>Add a review</h5>
-                                    <form action="#" class="tm-form">
+                                    <h5>Rəy yazın</h5>
+                                    <form class="tm-form" method="post">
+                                        {% csrf_token %}
                                         <div class="tm-form-inner">
+
                                             <div class="tm-form-field">
+                                                <!-- Поле рейтинга со звездами -->
                                                 <div class="tm-ratingbox tm-ratingbox-input">
-                                                            <span class="is-active"><i
-                                                                    class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span class="is-active"><i
-                                                            class="ion-android-star-outline"></i></span>
-                                                    <span><i class="ion-android-star-outline"></i></span>
+                                                    <span class="star">&#9733;</span>
+                                                    <span class="star">&#9733;</span>
+                                                    <span class="star">&#9733;</span>
+                                                    <span class="star">&#9733;</span>
+                                                    <span class="star">&#9733;</span>
                                                 </div>
+                                                <input type="hidden" name="rating" value="0">
+                                                <!-- Значение по умолчанию -->
                                             </div>
+                                            <!-- Поле имени -->
                                             <div class="tm-form-field tm-form-fieldhalf">
-                                                <input type="text" placeholder="Your Name*" required="required">
+                                                <label for="{{ comment_form.first_name.id_for_label }}">Ad</label>
+                                                {{ comment_form.first_name }}
                                             </div>
+
+                                            <!-- Поле фамилии -->
                                             <div class="tm-form-field tm-form-fieldhalf">
-                                                <input type="Email" placeholder="Your Email*" required="required">
+                                                <label for="{{ comment_form.last_name.id_for_label }}">Soyad</label>
+                                                {{ comment_form.last_name }}
                                             </div>
+
+                                            <!-- Поле текста комментария -->
                                             <div class="tm-form-field">
-                                                <textarea name="product-review" cols="30" rows="5" placeholder="Your Review"></textarea>
+                                                <label for="{{ comment_form.text.id_for_label }}">Rəy yazın</label>
+                                                {{ comment_form.text }}
                                             </div>
+
+
+                                            <!-- Кнопка отправки -->
                                             <div class="tm-form-field">
-                                                <button type="submit" class="tm-button">Submit</button>
+                                                <button type="submit" class="tm-button">Göndərin</button>
                                             </div>
                                         </div>
                                     </form>
@@ -676,4 +712,65 @@
         </div>
     </div>
     <!--// Product Details Wrapper -->
+
+    <script>
+        // Получаем контейнер видео
+        const videoContainer = document.getElementById("draggable-video");
+
+        if (videoContainer) {
+            let isDragging = false;
+            let isExpanded = false;
+            let offsetX, offsetY;
+
+            // Добавляем кнопку скрытия
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "&times;";
+            closeButton.classList.add("close-button");
+            videoContainer.appendChild(closeButton);
+
+            // Обработчик начала перетаскивания
+            videoContainer.addEventListener("mousedown", (e) => {
+                if (e.target === closeButton || isExpanded) return; // Игнорируем клик по кнопке закрытия или при увеличении
+                isDragging = true;
+                offsetX = e.clientX - videoContainer.offsetLeft;
+                offsetY = e.clientY - videoContainer.offsetTop;
+                videoContainer.classList.add("dragging");
+            });
+
+            // Обработчик перемещения мыши
+            document.addEventListener("mousemove", (e) => {
+                if (isDragging) {
+                    const left = e.clientX - offsetX;
+                    const top = e.clientY - offsetY;
+
+                    // Устанавливаем новые координаты контейнера
+                    videoContainer.style.left = `${left}px`;
+                    videoContainer.style.top = `${top}px`;
+                }
+            });
+
+            // Обработчик окончания перетаскивания
+            document.addEventListener("mouseup", () => {
+                if (isDragging) {
+                    isDragging = false;
+                    videoContainer.classList.remove("dragging");
+                }
+            });
+
+            // Обработчик клика на видео для увеличения/уменьшения
+            videoContainer.addEventListener("click", (e) => {
+                if (e.target.tagName === "VIDEO" && !isDragging) {
+                    isExpanded = !isExpanded;
+                    videoContainer.classList.toggle("expanded", isExpanded);
+                }
+            });
+
+            // Обработчик кнопки закрытия
+            closeButton.addEventListener("click", () => {
+                videoContainer.style.display = "none";
+            });
+        }
+
+
+    </script>
 {% endblock %}

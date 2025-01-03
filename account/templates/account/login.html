@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	Giriş
+{% endblock %}
+{% block content %}
+<!-- Breadcrumb Area -->
+<div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
+    <div class="container">
+        <div class="tm-breadcrumb">
+            <h2>Login & Register</h2>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li>Login & Register</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--// Breadcrumb Area -->
+<!-- Login Register Area -->
+        <div class="tm-section tm-login-register-area bg-white tm-padding-section">
+            <div class="container">
+                <div class="row">
+                    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+                    <div class="col-lg-6 col-md-8 col-sm-10">
+                        <form action="#" class="tm-form tm-login-form" method="post">
+                            {% csrf_token %}
+                            <h4>Giriş səhifəsi</h4>
+                            <div class="tm-form-inner">
+                                <div class="tm-form-field">
+                                    <label for="{{ form.email.id_for_label }}">İstifadəçi adı və ya e-poçt ünvanı*</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <label for="{{ form.password.id_for_label }}">Şifrə*</label>
+                                    {{ form.password }}
+                                </div>
+                                <div class="tm-form-field">
+                                    <input type="checkbox" name="login-remember" id="login-remember">
+                                    <label for="login-remember">Məni xatırla</label>
+                                    <p class="mb-0"><a href="#">Şifrənizi unutmusunuz?</a></p>
+                                    <p class="mb-0">Hesabınız yoxdur?<a href="{% url 'account:registration' %}" class="text-success"> Qeydiyyatdan keçin</a></p>
+                                </div>
+                                <div class="tm-form-field">
+                                    <button type="submit" class="tm-button">Daxil olun</button>
+                                </div>
+                                <div class="tm-form-field">
+                                    <div class="tm-form-sociallogin">
+                                        <h6>Və ya ilə daxil olun:</h6>
+                                        <ul>
+                                            <li><a href="#" class="facebook-btn"><i class="ion-social-facebook"></i></a></li>
+                                            <li><a href="#" class="google-btn"><i class="ion-social-google"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--// Login Register Area -->
+{% endblock %}

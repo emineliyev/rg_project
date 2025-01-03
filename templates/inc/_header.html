@@ -14,12 +14,17 @@
                 <div class="col-lg-4 col-12">
                     <div class="tm-header-options">
                         <div class="tm-dropdown tm-header-links">
-                            <button>My Account</button>
+                            <button>Hesabım</button>
                             <ul>
-                                <li><a href="my-account.html">Hesabım</a></li>
-                                <li><a href="login-register.html">Giriş/Qeydiyyat</a></li>
-                                <li><a href="cart.html">Alış-veriş Səbəti</a></li>
+                                {% if not user.is_authenticated %}
+                                <li><a href="{% url 'account:login' %}">Giriş</a></li>
+                                <li><a href="{% url 'account:registration' %}">Qeydiyyat</a></li>
+                                    {% else %}
+                                <li><a href="{% url 'account:profile' %}">Hesabım</a></li>
+                                <li><a href="{% url 'cart:cart_detail' %}">Alış-veriş Səbəti</a></li>
                                 <li><a href="wishlist.html">İstək siyahısı</a></li>
+                                <li><a href="{% url 'account:logout' %}">Təhlükəsiz çıxış</a></li>
+                                {% endif %}
                             </ul>
                         </div>
                         <div class="tm-dropdown tm-header-currency">
@@ -69,9 +74,19 @@
                 </div>
                 <div class="col-lg-3 col-6 order-2 order-lg-3">
                     <ul class="tm-header-icons">
-                        <li><a href="wishlist.html"><i class="ion-android-favorite-outline"></i><span>0</span></a></li>
-                        
-                        <li><a href="{% url 'cart:cart_detail' %}">
+                        <li>
+                            <a href="{% url 'wishlist:wishlist_detail' %}">
+                            <i class="ion-android-favorite-outline"></i>
+                                {% if wishlist|length > 0 %}
+                                    <span>{{ wishlist|length }}</span>
+                                    {% else %}
+                                    <span>0</span>
+                                {% endif %}
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'cart:cart_detail' %}">
                             <i class="ion-bag"></i>
                             {% with total_items=cart|length %}
                                 {% if total_items > 0 %}
@@ -96,52 +111,7 @@
                 <ul>
                     <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
                     <li><a href="about.html">Haqqımızda</a></li>
-                    <li class="tm-header-nav-megamenu"><a href="index.html">Məhsullar</a>
-
-                        <ul>
-                            <li><a href="shop.html">Common Pages</a>
-                                <ul>
-                                    <li><a href="index.html">Homepage</a></li>
-                                    <li><a href="about.html">About</a></li>
-                                    <li><a href="portfolios.html">Portfolios</a></li>
-                                    <li><a href="contact.html">Contact</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Blog Pages</a>
-                                <ul>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="blog-leftsidebar.html">Blog Left Sidebar</a></li>
-                                    <li><a href="blog-details.html">Blog Details</a></li>
-                                    <li><a href="blog-details-leftsidebar.html">Blog Details Left Sidebar</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Shop Pages</a>
-                                <ul>
-                                    <li><a href="products.html">Products</a></li>
-                                    <li><a href="products-leftsidebar.html">Products Left Sidebar</a></li>
-                                    <li><a href="products-nosidebar.html">Products Without Sidebar</a></li>
-                                    <li><a href="products-4-column.html">Products 4 Column</a></li>
-                                    <li><a href="product-details.html">Product Details</a></li>
-                                    <li><a href="product-details-leftsidebar.html">Product Details Left
-                                        Sidebar</a></li>
-                                    <li><a href="product-details-nosidebar.html">Product Details Without
-                                        Sidebar</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Shop Related Pages</a>
-                                <ul>
-                                    <li><a href="cart.html">Shopping Cart</a></li>
-                                    <li><a href="wishlist.html">Wishlist</a></li>
-                                    <li><a href="checkout.html">Checkout</a></li>
-                                    <li><a href="my-account.html">My Account</a></li>
-                                    <li><a href="login-register.html">Login / Register</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                    </li>
+                    <li><a href="{% url 'shop:products' %}">Məhsullar</a></li>
                     <li><a href="contact.html">Əlaqə</a></li>
                 </ul>
             </nav>

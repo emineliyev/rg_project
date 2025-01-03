@@ -1,5 +1,7 @@
 from decimal import Decimal
 from django.conf import settings
+
+from cart.forms import CartAddProductForm
 from shop.models import Product
 
 
@@ -125,18 +127,26 @@ class Cart:
 
     def __iter__(self):
         """
-        Modeldən məlumat əlavə edərək səbətdəki elementləri döndərir.
-        """
-        """
         Итерация по товарам в корзине, добавляя данные из модели.
         """
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
         for product in products:
             cart_item = self.cart[str(product.id)]
-            cart_item['product'] = product
-            cart_item['total_price'] = Decimal(cart_item['price']) * cart_item['quantity']
-            yield cart_item
+            quantity = cart_item.get('quantity', 0)
+            yield {
+                'id': product.id,
+                'name': product.name,
+                'price': Decimal(cart_item['price']),
+                'quantity': quantity,
+                'total_price': Decimal(cart_item['price']) * quantity,
+                'weight_option': cart_item.get('weight_option'),
+                'product': product,
+                'update_quantity_form': CartAddProductForm(initial={
+                    'quantity': quantity,
+                    'override': True
+                })
+            }
 
     def __len__(self):
         """

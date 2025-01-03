@@ -45,6 +45,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=60, unique=True, verbose_name='Slaq')
     category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Kateqoriya')
     material = models.ForeignKey('Material', on_delete=models.CASCADE, verbose_name='Material')
+    video = models.FileField(upload_to='videos/', null=True, blank=True, verbose_name='Видео файл')
     description = models.TextField(verbose_name='Təsvir')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Qiymət')
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, validators=[validate_discount],
@@ -54,6 +55,12 @@ class Product(models.Model):
     popularity = models.PositiveIntegerField(default=0, verbose_name="Популярность")
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə edilib')
     update_at = models.DateTimeField(auto_now=True, verbose_name='Yenilənib')
+
+    def average_rating(self):
+        comments = self.comments.all()
+        if comments.exists():
+            return sum(comment.rating for comment in comments) / comments.count()
+        return 0
 
     # def get_absolute_url(self):
     #     return reverse('product_detail', kwargs={'slug': self.slug})
@@ -148,4 +155,42 @@ class Image(models.Model):
     image = models.ImageField(upload_to='images/', verbose_name='')
 
     def __str__(self):
-        return f"{self.product.name} - {self.product.article} Məhsul üçün şəkil"
+        return f"{self.product.name} - {self.product.article} Məhsulu üçün şəkil"
+
+
+class SuperSale(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='supersales', verbose_name='')
+    title = models.CharField(max_length=255, verbose_name='Başlıq')
+    days = models.PositiveSmallIntegerField(verbose_name='Gün')
+    hours = models.PositiveSmallIntegerField(verbose_name='Saat')
+    minutes = models.PositiveSmallIntegerField(verbose_name='Dəqiqə')
+    seconds = models.PositiveSmallIntegerField(verbose_name='Saniyə')
+    create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə tarxi')
+
+    def __str__(self):
+        return f"{self.product.name} - {self.title}"
+
+    class Meta:
+        verbose_name = 'Kompaniya'
+        verbose_name_plural = 'Kompaniya'
+
+
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments', verbose_name='Məhsul')
+    first_name = models.CharField(max_length=60, verbose_name='Ad')
+    last_name = models.CharField(max_length=60, verbose_name='Soyad')
+    text = models.TextField(verbose_name='Şərh')
+    create_at = models.DateTimeField(auto_now_add=True, verbose_name='Tarix')
+    rating = models.PositiveSmallIntegerField(
+        verbose_name='Reytinq',
+        choices=[(i, i) for i in range(1, 6)],
+        default=5
+    )
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.product.name} ({self.rating})"
+
+    class Meta:
+        verbose_name = 'Şərh'
+        verbose_name_plural = 'Şərhlər'
+

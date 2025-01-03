@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	E-poçt ünvanının təsdiqi
+{% endblock %}
+{% block content %}
+    <div class="tm-product-details-area tm-section tm-padding-section bg-white">
+        <div class="container">
+	    <h3>E-poçt ünvanının təsdiqi</h3>
+        <p>{{ message }}</p>
+        <p>Giriş səhifəsinə keçin <a class="text-primary" href="{% url 'account:login' %}">Daxil olun</a></p>
+        </div>
+    </div>
+{% endblock %}

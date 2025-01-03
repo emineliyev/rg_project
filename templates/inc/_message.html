@@ -1,0 +1,10 @@
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast-message alert alert-{{ message.tags }} position-relative" role="alert">
+                {{ message }}
+                <div class="toast-timer"></div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
