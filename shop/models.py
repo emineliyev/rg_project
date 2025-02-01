@@ -1,18 +1,32 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+# 1. Встроенные библиотеки Python
 from datetime import timedelta
 
+# 2. Django и сторонние библиотеки
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
+from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
+from tinymce.models import HTMLField
+from mptt.models import MPTTModel, TreeForeignKey
 
 
-class Category(models.Model):
+class Category(MPTTModel):
     name = models.CharField(max_length=100, verbose_name='Ad')
     slug = models.SlugField(max_length=100, unique=True, verbose_name='Slaq')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+
+    def get_absolute_url(self):
+        return reverse('shop:category', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.name
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+        verbose_name = 'Kateqoriya'
+        verbose_name_plural = 'Kateqoriyalar'
 
     class Meta:
         verbose_name = 'Kateqoriya'
@@ -43,10 +57,10 @@ class Product(models.Model):
     article = models.CharField(max_length=20, verbose_name='Artikul')
     name = models.CharField(max_length=60, verbose_name='Ad')
     slug = models.SlugField(max_length=60, unique=True, verbose_name='Slaq')
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Kateqoriya')
+    category = TreeForeignKey('Category', on_delete=models.CASCADE, verbose_name='Kateqoriya')
     material = models.ForeignKey('Material', on_delete=models.CASCADE, verbose_name='Material')
     video = models.FileField(upload_to='videos/', null=True, blank=True, verbose_name='Видео файл')
-    description = models.TextField(verbose_name='Təsvir')
+    description = HTMLField(verbose_name='Təsvir')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Qiymət')
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, validators=[validate_discount],
                                    verbose_name='Endirim (%)')
@@ -56,14 +70,26 @@ class Product(models.Model):
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə edilib')
     update_at = models.DateTimeField(auto_now=True, verbose_name='Yenilənib')
 
+    def delete(self, *args, **kwargs):
+        # Удаление связанных изображений с диска
+        for image in self.images.all():
+            if image.image and default_storage.exists(image.image.name):
+                default_storage.delete(image.image.name)
+
+        # Удаление видеофайла, если он есть
+        if self.video and default_storage.exists(self.video.name):
+            default_storage.delete(self.video.name)
+
+        super().delete(*args, **kwargs)  # Удаляем сам продукт
+
     def average_rating(self):
         comments = self.comments.all()
         if comments.exists():
             return sum(comment.rating for comment in comments) / comments.count()
         return 0
 
-    # def get_absolute_url(self):
-    #     return reverse('product_detail', kwargs={'slug': self.slug})
+    def get_absolute_url(self):
+        return reverse('shop:product_detail', kwargs={'slug': self.slug})
 
     @property
     def discounted_price(self):
@@ -152,20 +178,23 @@ class WeightOption(models.Model):
 
 class Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images', verbose_name='')
-    image = models.ImageField(upload_to='images/', verbose_name='')
+    image = models.ImageField(upload_to='product/', verbose_name='')
+
+    def delete(self, *args, **kwargs):
+        if self.image and default_storage.exists(self.image.name):
+            default_storage.delete(self.image.name)  # Удаляет файл с диска
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product.name} - {self.product.article} Məhsulu üçün şəkil"
 
 
 class SuperSale(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='supersales', verbose_name='')
-    title = models.CharField(max_length=255, verbose_name='Başlıq')
-    days = models.PositiveSmallIntegerField(verbose_name='Gün')
-    hours = models.PositiveSmallIntegerField(verbose_name='Saat')
-    minutes = models.PositiveSmallIntegerField(verbose_name='Dəqiqə')
-    seconds = models.PositiveSmallIntegerField(verbose_name='Saniyə')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='supersales', verbose_name='Məhsul')
+    title = HTMLField(verbose_name='Başlıq')
+    sale_date = models.DateField(verbose_name='Endirim tarixi')
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə tarxi')
+    status = models.BooleanField(default=True, verbose_name='Status')
 
     def __str__(self):
         return f"{self.product.name} - {self.title}"
@@ -193,4 +222,3 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Şərh'
         verbose_name_plural = 'Şərhlər'
-

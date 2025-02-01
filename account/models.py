@@ -1,11 +1,14 @@
+# 1. Встроенные библиотеки Python
 import secrets
+
+# 2. Django и сторонние библиотеки
 from django.conf import settings
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.mail import send_mail
+from django.db import models
 from django.db.models.signals import pre_save
-from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 
 class Country(models.Model):
@@ -54,7 +57,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-class Account(AbstractBaseUser):
+class Account(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_('email address'), max_length=255, unique=True)
     is_active = models.BooleanField(default=False, verbose_name='Status')
     is_admin = models.BooleanField(default=False)
@@ -67,7 +70,7 @@ class Account(AbstractBaseUser):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Şəhər')
     address = models.CharField(max_length=255, verbose_name='Ünvan')
     postal_code = models.CharField(max_length=255, verbose_name='Poçt kodu')
-    fin_code = models.CharField(max_length=7, verbose_name='Fin kod')
+    fin_code = models.CharField(max_length=7, unique=True, verbose_name='Fin kod')
     avatar = models.ImageField(upload_to='avatars/Y/d/m/', blank=True, null=True)
     verification_token = models.CharField(max_length=100, blank=True, null=True)
 

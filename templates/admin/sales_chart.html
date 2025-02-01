@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <div class="container">
+    <h2 class="text-secondary mb-3">Satış qrafiki</h2>
+
+    <form method="get" class="form-inline mb-3">
+        <label for="{{ form.year.id_for_label }}">
+            {{ form.year }}
+        </label>
+            <label for="{{ form.month.id_for_label }}">
+            {{ form.month }}
+        </label>
+            <label for="{{ form.day.id_for_label }}">
+            {{ form.day }}
+        </label>
+        <button type="submit" class="btn btn-info mr-2">Filtrlə</button>
+        <a href="{% url 'orders:sales_chart' %}" type="reset" class="btn btn-secondary">Sıfırla</a>
+    </form>
+        <hr>
+</div>
+
+<canvas id="salesChart" width="800" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Satış',
+                data: {{ sales|safe }},
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

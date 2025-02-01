@@ -5141,7 +5141,7 @@ button.tm-videobutton img {
 .widget-categories ul li a:hover, .widget-categories ul li a.is-active,
 .widget-services ul li a:hover,
 .widget-services ul li a.is-active {
-  color: #1F584C;
+  color: #fff;
 }
 
 /* Widget Recentpost */

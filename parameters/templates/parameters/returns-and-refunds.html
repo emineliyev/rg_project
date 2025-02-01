@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {{ block.super }}: Qaytarmalar və Geri Ödənişlər
+{% endblock %}
+{% block content %}
+    <!-- Breadcrumb Area -->
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+        <div class="container">
+            <div class="tm-breadcrumb">
+                <h2>Contact Us</h2>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li>About</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--// Breadcrumb Area -->
+
+    <!-- Privacy Policy Area -->
+    <div class="tm-section tm-contact-area tm-padding-section bg-white">
+        <div class="container">
+            <div class="tm-contact-blocks">
+                {% for return in returns %}
+                    <h1 class="text-center">{{ return.title }}</h1>
+                    <p>Yenilənmə tarixi: {{ return.update_at }}</p>
+                    {{ return.description|safe }}
+
+                    <h2>8. Əlaqə</h2>
+                    <p>Sual və ya təklifləriniz varsa, bizimlə əlaqə saxlayın:</p>
+
+                <div class="row mt-30-reverse justify-content-center">
+                    {% for contact in contacts %}
+                    <!-- Contact block -->
+                    <div class="col-lg-4 col-md-6  mt-30">
+                        <div class="tm-contact-block text-center">
+                            <i class="ion-android-call"></i>
+                            <h6>Telefon</h6>
+                            {% for phone in contact.phone.all %}
+                            <p>Telefon : <a href="tel:+994{{ phone }}">{{ phone }}</a></p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--// Contact block -->
+
+                    <!-- Contact block -->
+                    <div class="col-lg-4 col-md-6  mt-30">
+                        <div class="tm-contact-block text-center">
+                            <i class="ion-location"></i>
+                            <h6>Ünvan</h6>
+                            <p>{{ contact.address }}</p>
+                        </div>
+                    </div>
+                    <!--// Contact block -->
+
+                    <!-- Contact block -->
+                    <div class="col-lg-4 col-md-6  mt-30">
+                        <div class="tm-contact-block text-center">
+                            <i class="ion-email"></i>
+                            <h6>E-poçt</h6>
+                            {% for email in contact.email.all %}
+                            <p><a href="mailto:{{ email }}">{{ email }}</a></p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--// Contact block -->
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!--// Privacy Policy Area -->
+{% endblock %}

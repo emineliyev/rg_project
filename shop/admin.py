@@ -1,7 +1,12 @@
+# 1. Django и сторонние библиотеки
 from django.contrib import admin
+from django.db import models
 from django.utils.html import format_html
+from mptt.admin import DraggableMPTTAdmin
+from tinymce.widgets import TinyMCE
 
-from .models import Product, Category, Material, Image, WeightOption, Comment
+# 2. Импорты из проекта
+from .models import Category, Comment, Image, Material, Product, SuperSale, WeightOption
 
 
 class ImageInline(admin.TabularInline):
@@ -14,10 +19,14 @@ class WeightOptionInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name',)}
+admin.site.register(
+    Category,
+    DraggableMPTTAdmin,
+    prepopulated_fields={"slug": ("name",)},
+    list_display=('tree_actions', 'indented_title', 'id'),
+    list_display_links=('indented_title',),
+    search_fields=('name',)
+)
 
 
 @admin.register(Material)
@@ -28,10 +37,14 @@ class MaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()}
+    }
     list_display = (
         'name', 'article', 'price', 'discount', 'discounted_price', 'discount_amount',
         'quantity_in_stock', 'weight_options_display', 'is_in_stock', 'product_rating', 'display_image'
     )
+
     list_editable = ('price', 'discount', 'quantity_in_stock')
     list_filter = ('category', 'material')
     search_fields = ('name', 'article')
@@ -80,6 +93,19 @@ class ProductAdmin(admin.ModelAdmin):
                 [f"{opt.weight} г (+{opt.price_modifier}₼)" for opt in options]
             )
         return "Seçim yoxdur"
+
+
+@admin.register(SuperSale)
+class SuperSaleAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()}
+    }
+    list_display = ('formatted_title', 'create_at')
+
+    def formatted_title(self, obj):
+        return format_html(obj.title)  # Это позволит рендерить HTML
+
+    formatted_title.short_description = "Başlıq"
 
 
 @admin.register(Comment)

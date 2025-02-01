@@ -1,0 +1,93 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Sifariş №{{ order.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        h1 {
+            color: #1F584C;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1F584C;
+            color: white;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Sifariş №RG-{{ order.id }}</h1>
+<p><strong>Tarix:</strong> {{ order.created_at }}</p>
+<p><strong>Müştəri:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+<p><strong>E-poçt:</strong> {{ order.email }}</p>
+<p><strong>Telefon:</strong> {{ order.phone_number }}</p>
+<p><strong>Fin kod:</strong> {{ order.fin_code }}</p>
+<p><strong>Ünvan:</strong> {{ order.address }}, {{ order.city }}, {{ order.country }} {{ order.postal_code }}</p>
+
+<h2>Məhsullar:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Məhsul</th>
+        <th>Əsas qiymət (₼)</th>
+        <th>Güzəştdən sonra qiymət (₼)</th>
+        <th>Güzəşt (₼)</th>
+        <th>Miqdar</th>
+        <th>Cəmi (₼)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in order_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.original_price|floatformat:2 }}</td>
+            <td>{{ item.discounted_price|floatformat:2 }}</td>
+            <td>{{ item.discount|floatformat:2 }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.discounted_price|multiply:item.quantity|floatformat:2 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<p class="total">Cəmi məbləğ: <strong>{{ total_price }} ₼</strong></p>
+
+{% comment %}
+<p>
+    <strong>Ödəniş statusu:</strong>
+    {% if order.paid %}
+        <span style="color: green; font-weight: bold;">🟢 ÖDƏNİLİB</span>
+    {% else %}
+        <span style="color: red; font-weight: bold;">🔴 ÖDƏNİLMƏYİB</span>
+    {% endif %}
+</p>
+{% endcomment %}
+</body>
+</html>

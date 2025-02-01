@@ -37,3 +37,21 @@ class OrderForm(forms.ModelForm):
                 self.fields['country'].initial = user.country.name
             if user.city:
                 self.fields['city'].initial = user.city.name
+
+
+class SalesFilterForm(forms.Form):
+    year = forms.IntegerField(
+        required=False,
+        label="İl üzrə",
+        widget=forms.NumberInput(attrs={'placeholder': 'İl', 'class': 'form-control mr-2'}),
+    )
+    month = forms.IntegerField(
+        required=False,
+        label="Ay üzrə",
+        widget=forms.NumberInput(attrs={'placeholder': 'Ay', 'class': 'form-control mr-2'}),
+    )
+    day = forms.IntegerField(
+        required=False,
+        label="Gün üzrə",
+        widget=forms.NumberInput(attrs={'placeholder': 'Gün', 'class': 'form-control mr-2'}),
+    )

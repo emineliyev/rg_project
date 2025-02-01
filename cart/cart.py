@@ -1,20 +1,14 @@
 from decimal import Decimal
 from django.conf import settings
-
 from cart.forms import CartAddProductForm
+from coupons.models import Coupon
 from shop.models import Product
 
 
 class Cart:
     def __init__(self, request):
         """
-        Səbət işə salınır. Məlumat sessiyada saxlanılır.
-        """
-        """
         Инициализация корзины. Данные хранятся в сессии.
-        """
-        """
-        Initializing the basket. Data is stored in the session.
         """
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
@@ -22,16 +16,11 @@ class Cart:
             # Если корзина пуста, создаём пустую корзину
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
+        self.coupon_id = self.session.get('coupon_id')
 
     def add(self, product, weight_option=None, quantity=1, override_quantity=False):
         """
-        Səbətə məhsul əlavə edir və ya onun miqdarını yeniləyir.
-        """
-        """
         Добавляет продукт в корзину или обновляет его количество.
-        """
-        """
-        Adds a product to the cart or updates its quantity.
         """
         product_id = str(product.id)
         if product_id not in self.cart:
@@ -79,13 +68,7 @@ class Cart:
 
     def remove(self, product, weight_option=None):
         """
-        Məhsulu səbətdən çıxarır.
-        """
-        """
         Удаляет продукт из корзины.
-        """
-        """
-        Removes the product from the cart.
         """
         product_id = str(product.id)
         key = product_id
@@ -98,26 +81,14 @@ class Cart:
 
     def clear(self):
         """
-        Zibil qutusunu təmizləyir.
-        """
-        """
         Очищает корзину.
-        """
-        """
-        Empties the Recycle Bin.
         """
         self.session[settings.CART_SESSION_ID] = {}
         self.session.modified = True
 
     def get_total_price(self):
         """
-        Səbətdəki məhsulların ümumi dəyərini hesablayır.
-        """
-        """
         Рассчитывает общую стоимость товаров в корзине.
-        """
-        """
-        Calculates the total cost of items in the cart.
         """
         total = Decimal(0)
         for item in self.cart.values():
@@ -150,12 +121,24 @@ class Cart:
 
     def __len__(self):
         """
-        Səbətdəki məhsulların ümumi sayını təmizləyir.
-        """
-        """
         Подчищает общее количество товаров в корзине.
         """
-        """
-        Clears the total number of items in the cart.
-        """
         return sum(item['quantity'] for item in self.cart.values())
+
+    @property
+    def coupon(self):
+        if self.coupon_id:
+            try:
+                return Coupon.objects.get(id=self.coupon_id)
+            except Coupon.DoesNotExist:
+                pass
+            return None
+
+    def get_discount(self):
+        if self.coupon:
+            return (self.coupon.discount / Decimal(100)) * self.get_total_price()
+
+        return Decimal(0)
+
+    def get_total_price_after_discount(self):
+        return self.get_total_price() - self.get_discount()

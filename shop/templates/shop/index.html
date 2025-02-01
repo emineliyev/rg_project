@@ -1,62 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cache %}
 {% block title %}{{ block.super }}: Əsas səhifə{% endblock %}
 
 {% block content %}
     <!-- Heroslider Area -->
     {% include 'inc/_slider.html' %}
     <!--// Heroslider Area -->
+
     <!-- Features Area -->
-    <div class="tm-section tm-feature-area bg-grey">
-        <div class="container">
-            <div class="row mt-30-reverse">
-
-                <!-- Single Feature -->
-                <div class="col-lg-4 mt-30">
-                    <div class="tm-feature">
-                                <span class="tm-feature-icon">
-                                    <img src="{% static 'assets/images/icons/icon-free-shipping.png' %}" alt="free shipping">
-                                </span>
-                        <div class="tm-feature-content">
-                            <h6>Free Shipping</h6>
-                            <p>We provide free shipping for all order over $200.00</p>
-                        </div>
-                    </div>
-                </div>
-                <!--// Single Feature -->
-
-                <!-- Single Feature -->
-                <div class="col-lg-4 mt-30">
-                    <div class="tm-feature">
-                                <span class="tm-feature-icon">
-                                    <img src="{% static 'assets/images/icons/icon-fast-delivery.png' %}" alt="fast delivery">
-                                </span>
-                        <div class="tm-feature-content">
-                            <h6>Fast Delivery</h6>
-                            <p>We always deliver our customers very quickly.</p>
-                        </div>
-                    </div>
-                </div>
-                <!--// Single Feature -->
-
-                <!-- Single Feature -->
-                <div class="col-lg-4 mt-30">
-                    <div class="tm-feature">
-                                <span class="tm-feature-icon">
-                                    <img src="{% static 'assets/images/icons/icon-247-support.png' %}" alt="24/7 Support">
-                                </span>
-                        <div class="tm-feature-content">
-                            <h6>24/7 Support</h6>
-                            <p>We provide support to our customers within 24 hours. </p>
-                        </div>
-                    </div>
-                </div>
-                <!--// Single Feature -->
-
-            </div>
-        </div>
-    </div>
+    {% include 'inc/_features.html' %}
     <!--// Features Area -->
+
 
     <!-- Popular Products Area -->
     <div id="tm-popular-products-area" class="tm-section tm-popular-products-area tm-padding-section bg-white">
@@ -64,23 +19,30 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6 col-12">
                     <div class="tm-sectiontitle text-center">
-                        <h3>POPULLAR MƏHSULLAR</h3>
+                        <h3>ƏN ÇOX SATILANLAR</h3>
                         <p>Populyar məhsullarımız o qədər gözəldir ki, alıcılar onları asanlıqla cəlb edir.</p>
                     </div>
                 </div>
             </div>
+
             <div class="row tm-products-slider">
 
                 <!-- Single Product 8 Eded -->
+
                 {% for popular_product in popular_products %}
                     <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                         <div class="tm-product tm-scrollanim">
                             <div class="tm-product-topside">
+
                                 <div class="tm-product-images">
+                                 {% cache 900 product_images popular_product.id %}
                                     {% for image in popular_product.images.all %}
-                                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
+                                        <img src="{{ image.image.url }}"
+                                             alt="{{ image.alt_text|default:'product image' }}">
                                     {% endfor %}
+                                {% endcache %}
                                 </div>
+
                                 <ul class="tm-product-actions">
                                     <li>
                                         <form method="post" action="{% url 'cart:cart_add' popular_product.id %}">
@@ -88,13 +50,13 @@
                                             <input type="hidden" name="quantity" value="1">
                                             {% if popular_product.is_in_stock < 1 %}
 
-                                            <button type="submit" disabled class="btn btn-secondary">
-                                                <i class="ion-android-cart"></i> Səbətə at
-                                            </button>
-                                                {% else %}
+                                                <button type="submit" disabled class="btn btn-secondary">
+                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                </button>
+                                            {% else %}
                                                 <button type="submit" class="tm-button ">
-                                                <i class="ion-android-cart"></i> Səbətə at
-                                            </button>
+                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                </button>
                                             {% endif %}
                                         </form>
                                     </li>
@@ -107,11 +69,13 @@
                                         </form>
                                     </li>
                                 </ul>
-                            {% if popular_product.is_in_stock < 1 %}
-                                <div class="tm-product-badges">
+
+                                {% if popular_product.is_in_stock < 1 %}
+                                    <div class="tm-product-badges">
                                         <span class="tm-product-badges-soldout">Tükənib</span>
-                                </div>
-                            {% endif %}
+                                    </div>
+                                {% endif %}
+
                                 <div class="tm-product-badges">
                                     {% if popular_product.is_new %}
                                         <span class="tm-product-badges-new">Yeni</span>
@@ -120,10 +84,12 @@
                                         <span class="tm-product-badges-sale">- {{ popular_product.discount }} %</span>
                                     {% endif %}
                                 </div>
+
                             </div>
+
                             <div class="tm-product-bottomside">
                                 <h6 class="tm-product-title">
-                                    <a href="{% url 'shop:product_detail' popular_product.id %}">{{ popular_product.name }}</a>
+                                    <a href="{{ popular_product.get_absolute_url }}">{{ popular_product.name }}</a>
                                 </h6>
                                 <div class="tm-ratingbox">
                                     {% for i in "12345"|slice:":" %}
@@ -138,38 +104,11 @@
                                 {% else %}
                                     <span class="tm-product-price">{{ popular_product.price }} ₼</span>
                                 {% endif %}
-                                <div class="tm-product-content">
-                                    <p>{{ popular_product.description }}</p>
-                                    <ul class="tm-product-actions">
-                                        <li>
-                                        <form method="post" action="{% url 'cart:cart_add' popular_product.id %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="quantity" value="1">
-                                            {% if popular_product.is_in_stock < 1 %}
-                                            <button type="submit" disabled class="btn btn-secondary">
-                                                <i class="ion-android-cart"></i> Səbətə at
-                                            </button>
-                                                {% else %}
-                                                <button type="submit" class="tm-button ">
-                                                <i class="ion-android-cart"></i> Səbətə at
-                                            </button>
-                                            {% endif %}
-                                        </form>
-                                    </li>
-                                        <li>
-                                            <form method="post" action="{% url 'wishlist:add_wish' popular_product.id %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="tm-button ">
-                                                    <i class="ion-heart"></i></button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+
                 <!--// Single Product -->
 
             </div>
@@ -177,39 +116,6 @@
     </div>
     <!--// Popular Products Area -->
 
-    <!-- Banners Area -->
-    <div class="tm-section tm-banners-area">
-        <div class="container">
-            <div class="row mt-30-reverse">
-
-                <!-- Single Banner -->
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-30">
-                    <a href="#" class="tm-banner tm-scrollanim">
-                        <img src="{% static 'assets/images/banner-image-1.jpg' %}" alt="banner image">
-                    </a>
-                </div>
-                <!--// Single Banner -->
-
-                <!-- Single Banner -->
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-30">
-                    <a href="#" class="tm-banner tm-scrollanim">
-                        <img src="{% static 'assets/images/banner-image-2.jpg' %}" alt="banner image">
-                    </a>
-                </div>
-                <!--// Single Banner -->
-
-                <!-- Single Banner -->
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12 mt-30">
-                    <a href="#" class="tm-banner tm-scrollanim">
-                        <img src="{% static 'assets/images/banner-image-3.jpg' %}" alt="banner image">
-                    </a>
-                </div>
-                <!--// Single Banner -->
-
-            </div>
-        </div>
-    </div>
-    <!--// Banners Area -->
 
     <!-- NEW ARRIVAL PRODUCTS -->
     <div id="tm-latest-products-area" class="tm-section tm-latest-products-area tm-padding-section bg-white">
@@ -223,19 +129,22 @@
                 </div>
             </div>
             <div class="row mt-50-reverse">
-
                 <!-- Single Product 8 eded -->
                 {% for new_product in new_products %}
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mt-50">
                         <div class="tm-product tm-scrollanim">
                             <div class="tm-product-topside">
+
                                 <div class="tm-product-images">
+                                    {% cache 900 product_images new_product.id %}
                                     {% for image in new_product.images.all %}
                                         <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
                                     {% endfor %}
+                                    {% endcache %}
                                 </div>
+
                                 <ul class="tm-product-actions">
-                                        <li>
+                                    <li>
                                         <form method="post" action="{% url 'cart:cart_add' new_product.id %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="quantity" value="1">
@@ -243,8 +152,8 @@
                                                 <button type="submit" disabled class="btn btn-secondary">
                                                     <i class="ion-android-cart"></i> Səbətə at
                                                 </button>
-                                                    {% else %}
-                                                    <button type="submit" class="tm-button ">
+                                            {% else %}
+                                                <button type="submit" class="tm-button ">
                                                     <i class="ion-android-cart"></i> Səbətə at
                                                 </button>
                                             {% endif %}
@@ -259,11 +168,13 @@
                                         </form>
                                     </li>
                                 </ul>
+
                                 {% if new_product.is_in_stock < 1 %}
-                                <div class="tm-product-badges">
+                                    <div class="tm-product-badges">
                                         <span class="tm-product-badges-soldout">Tükənib</span>
-                                </div>
+                                    </div>
                                 {% endif %}
+
                                 <div class="tm-product-badges">
                                     {% if new_product.is_new %}
                                         <span class="tm-product-badges-new">Yeni</span>
@@ -272,9 +183,11 @@
                                         <span class="tm-product-badges-sale">- {{ new_product.discount }} %</span>
                                     {% endif %}
                                 </div>
+
                             </div>
                             <div class="tm-product-bottomside">
-                                <h6 class="tm-product-title"><a href="{% url 'shop:product_detail' new_product.id %}">{{ new_product.name }}</a>
+                                <h6 class="tm-product-title">
+                                    <a href="{{ new_product.get_absolute_url }}">{{ new_product.name }}</a>
                                 </h6>
                                 <div class="tm-ratingbox">
                                     {% for i in "12345"|slice:":" %}
@@ -289,43 +202,11 @@
                                 {% else %}
                                     <span class="tm-product-price">{{ new_product.price }} ₼</span>
                                 {% endif %}
-                                <div class="tm-product-content">
-                                    <p>{{ new_product.description }}</p>
-                                    <ul class="tm-product-actions">
-                                        <li>
-                                            <form method="post" action="{% url 'cart:cart_add' new_product.id %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="quantity" value="1">
-                                                {% if new_product.is_in_stock < 1 %}
-                                                    <button type="submit" disabled class="btn btn-secondary">
-                                                        <i class="ion-android-cart"></i> Səbətə at
-                                                    </button>
-                                                        {% else %}
-                                                        <button type="submit" class="tm-button ">
-                                                        <i class="ion-android-cart"></i> Səbətə at
-                                                    </button>
-                                                {% endif %}
-                                            </form>
-                                        </li>
-                                        <li>
-                                            <button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i></button>
-                                        </li>
-                                        <li>
-                                            <form method="post" action="{% url 'wishlist:add_wish' new_product.id %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="tm-button ">
-                                                    <i class="ion-heart"></i></button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
                 <!--// Single Product -->
-
             </div>
             <div class="tm-product-loadmore text-center mt-50">
                 <a href="{% url 'shop:products' %}" class="tm-button">Bütün Məhsullar</a>
@@ -338,19 +219,24 @@
     <div class="tm-section tm-offer-area tm-padding-section bg-grey">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6 col-12 order-2 order-lg-1">
-                    <div class="tm-offer-content">
-                        <h6>Ayın super endirimi</h6>
-                        <h1>Brend qulağında <span>yalnız </span>$250</h1>
-                        <div class="tm-countdown" data-countdown="2020/10/12"></div>
-                        <a href="product-details.html" class="tm-button">İndi al</a>
+                {% cache 604800 super_sales %}
+                {% for super_sale in super_sales %}
+                    <div class="col-lg-6 col-12 order-2 order-lg-1">
+                        <div class="tm-offer-content">
+                            <h6>Ayın super endirimi</h6>
+                            <h1>{{ super_sale.title|safe }}</h1>
+                            <div class="tm-countdown" data-countdown="{{ super_sale.sale_date|date:'Y/m/d' }}"></div>
+                            <a href="{{ super_sale.product.get_absolute_url }}" class="tm-button">İndi alın</a>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-6 col-12 order-1 order-lg-2">
-                    <div class="tm-offer-image">
-                        <img class="tm-offer" src="{% static 'assets/images/offer-image-1.png' %}" alt="offer image">
+                    <div class="col-lg-6 col-12 order-1 order-lg-2">
+                        <div class="tm-offer-image">
+                            <img class="tm-offer" src="{% static 'assets/images/offer-image-1.png' %}"
+                                 alt="offer image">
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
+            {% endcache %}
             </div>
         </div>
     </div>
@@ -360,89 +246,20 @@
     <div class="tm-section tm-brandlogo-area tm-padding-section bg-grey">
         <div class="container">
             <div class="row tm-brandlogo-slider">
-
                 <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
+                {% cache 43200 partners %}
+                {% for partner in partners %}
+                    <div class="col-12 tm-brandlogo">
+                        <a href="{{ partner.url }}" target="_blank">
+                            <img src="{{ partner.image.url }}" alt="brand-logo">
+                        </a>
+                    </div>
+                {% endfor %}
+                {% endcache %}
                 <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
-                <!-- Brang Logo Single -->
-                <div class="col-12 tm-brandlogo">
-                    <a href="#">
-                        <img src="{% static 'assets/images/brandlogo-1.png' %}" alt="brand-logo">
-                    </a>
-                </div>
-                <!--// Brang Logo Single -->
-
             </div>
         </div>
     </div>
     <!--// Brand Logos -->
+
 {% endblock %}

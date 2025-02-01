@@ -1,0 +1,111 @@
+/* Общие стили */
+.tm-section.tm-checkout-area {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Таблица */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Заголовок таблицы */
+.table thead {
+    background-color: #1F584C;
+    color: #ffffff;
+}
+
+.table thead th {
+    padding: 15px;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Ячейки таблицы */
+.table tbody td {
+    padding: 12px;
+    text-align: center;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+/* Ссылки на товары */
+.table tbody td a {
+    color: #1F584C;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.table tbody td a:hover {
+    color: #154236;
+    text-decoration: underline;
+}
+
+/* Количество и цена */
+.table tbody td:nth-child(3),
+.table tbody td:nth-child(4),
+.table tbody td:nth-child(5) {
+    font-weight: bold;
+}
+
+/* Изображения товаров */
+.table tbody td img {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    transition: transform 0.3s ease;
+}
+
+.table tbody td img:hover {
+    transform: scale(1.1);
+}
+
+/* Общая сумма */
+h3.text-secondary {
+    text-align: right;
+    font-weight: bold;
+    color: #1F584C;
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 2px solid #1F584C;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 10px;
+        background: #f9f9f9;
+    }
+
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+        font-size: 14px;
+        padding: 8px;
+        border: none;
+    }
+
+    .table tbody td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+        color: #1F584C;
+    }
+}

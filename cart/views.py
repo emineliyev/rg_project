@@ -1,14 +1,17 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
-
+from coupons.forms import CouponApplyForm
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
+from coupons.models import Coupon
 from shop.models import Product, WeightOption
 
 
 @require_POST
 def cart_add(request, product_id):
+    """
+    Добавляем товар в корзину
+    """
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
     form = CartAddProductForm(request.POST)
@@ -27,6 +30,9 @@ def cart_add(request, product_id):
 
 @require_POST
 def cart_remove(request, product_id):
+    """
+    Удаляем товар из-корзину
+    """
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
     cart.remove(product)
@@ -34,16 +40,36 @@ def cart_remove(request, product_id):
 
 
 def cart_detail(request):
+    """
+    Отображаем детальную страницу корзины
+    """
     cart = Cart(request)
+    applied_coupon = None
+    if 'coupon_id' in request.session:
+        applied_coupon = Coupon.objects.filter(id=request.session['coupon_id']).first()
+    total_discount = sum(
+        ((item['product'].price - item['product'].discounted_price) * item['quantity'])
+        for item in cart
+    )
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={
             'quantity': item['quantity'],
             'override_quantity': True
         })
-    return render(request, 'cart/detail.html', {'cart': cart})
+    coupon_apply_form = CouponApplyForm()
+    context = {
+        'cart': cart,
+        'total_discount': total_discount,
+        'coupon_apply_form': coupon_apply_form,
+        'applied_coupon': applied_coupon
+    }
+    return render(request, 'cart/detail.html', context=context)
 
 
 def cart_clear(request):
+    """
+    Очищаем корзину
+    """
     cart = request.session.get('cart')
     if cart:
         # Səbəti sessiyadan çıxardır

@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.forms import User
 from account.models import Account
 
 
@@ -48,26 +47,6 @@ class UserRegisterForm(forms.Form):
 class LoginForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput())
     password = forms.CharField(widget=forms.PasswordInput())
-
-
-
-
-# class ProfileForm(forms.ModelForm):
-#     class Meta:
-#         model = Account
-#         fields = ['email', 'first_name', 'last_name', 'fin_code', 'phone_number', 'country', 'city', 'address',
-#                   'postal_code']
-#         widgets = {
-#             'email': forms.EmailInput(attrs={'class': 'form-control'}),
-#             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-#             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-#             'fin_code': forms.TextInput(attrs={'class': 'form-control'}),
-#             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
-#             'country': forms.Select(attrs={'class': 'form-control'}),
-#             'city': forms.Select(attrs={'class': 'form-control'}),
-#             'address': forms.TextInput(attrs={'class': 'form-control'}),
-#             'postal_code': forms.TextInput(attrs={'class': 'form-control'}),
-#         }
 
 
 class ProfileForm(forms.ModelForm):

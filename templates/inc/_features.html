@@ -1,0 +1,27 @@
+{% load static %}
+<div class="tm-section tm-feature-area bg-grey">
+        <div class="container">
+            <div class="row mt-30-reverse">
+
+                <!-- Single Feature -->
+                {% for feature in features %}
+
+
+
+                <div class="col-lg-4 mt-30">
+                    <div class="tm-feature">
+                                <span class="tm-feature-icon">
+                                    <img src="{{ feature.image.url }}" alt="free shipping">
+                                </span>
+                        <div class="tm-feature-content">
+                            <h6>{{ feature.title }}</h6>
+                            <p>{{ feature.description|safe }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!--// Single Feature -->
+
+            </div>
+        </div>
+    </div>

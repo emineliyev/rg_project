@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {{ block.super }}: Haqqımızda
+{% endblock %}
+{% block content %}
+    <!-- Breadcrumb Area -->
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+        <div class="container">
+            <div class="tm-breadcrumb">
+                <h2>About Us</h2>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li>About</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--// Breadcrumb Area -->
+    <!-- Aboout Area -->
+    <div class="tm-about-area tm-padding-section bg-white">
+            <div class="container">
+            {% for about in abouts %}
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="tm-about-image">
+                            <img src="" alt="about image">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="tm-about-content">
+                            <h4>{{ about.title }}</h4>
+                            <p>{{ about.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!--// Aboout Area -->
+{% endblock %}

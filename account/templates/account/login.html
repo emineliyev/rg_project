@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-	Giriş
+	{{ block.super }}: Giriş
 {% endblock %}
 {% block content %}
 <!-- Breadcrumb Area -->
@@ -23,22 +23,25 @@
                 <div class="row">
                     <div class="container d-flex justify-content-center align-items-center min-vh-100">
                     <div class="col-lg-6 col-md-8 col-sm-10">
-                        <form action="#" class="tm-form tm-login-form" method="post">
+                        <form class="row tm-form tm-login-form" method="post">
                             {% csrf_token %}
                             <h4>Giriş səhifəsi</h4>
                             <div class="tm-form-inner">
                                 <div class="tm-form-field">
-                                    <label for="{{ form.email.id_for_label }}">İstifadəçi adı və ya e-poçt ünvanı*</label>
+                                    <label for="{{ form.email.id_for_label }}">E-poçt ünvanı*</label>
                                     {{ form.email }}
                                 </div>
+                                    <div class="valid-feedback">
+                                      Looks good!
+                                    </div>
                                 <div class="tm-form-field">
                                     <label for="{{ form.password.id_for_label }}">Şifrə*</label>
                                     {{ form.password }}
                                 </div>
                                 <div class="tm-form-field">
-                                    <input type="checkbox" name="login-remember" id="login-remember">
-                                    <label for="login-remember">Məni xatırla</label>
-                                    <p class="mb-0"><a href="#">Şifrənizi unutmusunuz?</a></p>
+                                    <p class="mb-0"><a href="{% url 'password_reset' %}">Şifrənizi unutmusunuz?</a></p>
+                                </div>
+                                <div class="tm-form-field">
                                     <p class="mb-0">Hesabınız yoxdur?<a href="{% url 'account:registration' %}" class="text-success"> Qeydiyyatdan keçin</a></p>
                                 </div>
                                 <div class="tm-form-field">

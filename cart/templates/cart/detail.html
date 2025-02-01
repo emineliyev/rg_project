@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-
+    {{ block.super }}: Səbət
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
@@ -10,9 +10,9 @@
             <div class="tm-breadcrumb">
                 <h2>Shopping Cart</h2>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="products.html">Shop</a></li>
-                    <li>Shopping Cart</li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                    <li><a href="{% url 'shop:products' %}">Məhsullar</a></li>
+                    <li>Səbət</li>
                 </ul>
             </div>
         </div>
@@ -22,7 +22,24 @@
     <!-- Shopping Cart Area -->
     <div class="tm-section shopping-cart-area bg-white tm-padding-section">
         <div class="container">
+        <div class="tm-checkout-coupon">
+                <a href="#checkout-couponform" data-toggle="collapse"><span>Kupon kodunuz var?</span> Bura klikləyin və kodunuzu daxil edin.</a>
+                <div id="checkout-couponform" class="collapse">
+                <form action="{% url 'coupons:apply' %}" class="tm-checkout-couponform" method="post">
+                    {% csrf_token %}
 
+                    {% if request.session.coupon_id %}
+                        <!-- Если купон применён -->
+                        <input type="text" value="{{ applied_coupon.code }}" readonly>
+                        <button type="submit" class="tm-button" name="action" value="remove">Ləğv edin</button>
+                    {% else %}
+                        <!-- Если купон не применён -->
+                        {{ coupon_apply_form }}
+                        <button type="submit" class="tm-button" name="action" value="apply">Təstiq edin</button>
+                    {% endif %}
+                </form>
+                </div>
+            </div>
             <!-- Shopping Cart Table -->
             <div class="tm-cart-table table-responsive">
                 <table class="table table-bordered mb-0">
@@ -58,9 +75,6 @@
                                     <!-- Цена за единицу -->
                             <td class="tm-cart-price">
                                 {{ item.price }} ₼
-                                {% if item.weight_option %}
-                                    <br><small>+ Çəki qiyməti: {{ item.weight_option.price_modifier }} ₼</small>
-                                {% endif %}
                             </td>
                             <td>
                                 <div >
@@ -108,38 +122,51 @@
             <!-- Shopping Cart Content -->
             <div class="tm-cart-bottomarea">
                 <div class="row">
-                    <div class="col-lg-8 col-md-6">
-                        <div class="tm-buttongroup">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="tm-buttongroup d-flex">
                             <a href="#" class="tm-button">Alış-verişə davam edin</a>
                             <form method="post" action="{% url 'cart:cart_clear' %}">
                             {% csrf_token %}
                             <button type="submit" class="tm-button tm-button-dark">Səbəti təmizlə</button>
                             </form>
                         </div>
-                        <form action="#" class="tm-cart-coupon">
-                            <label for="coupon-field">Kupon kodunuz var?</label>
-                            <input type="text" id="coupon-field" placeholder="Kupon kodunu daxil edin"
-                                   required="required">
-                            <button type="submit" class="tm-button">Göndər</button>
-                        </form>
                     </div>
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-6 col-md-6">
                         <div class="tm-cart-pricebox">
                             <h2>Səbət Cəmi</h2>
                             <div class="table-responsive">
                                 <table class="table table-borderless">
                                     <tbody>
+                                    {% if cart.coupon %}
                                     <tr class="tm-cart-pricebox-subtotal">
                                         <td>Səbət arası cəmi</td>
-                                        <td>{{ cart.get_total_price }} ₼</td>
+                                        <td>{{ cart.get_total_price|floatformat:2 }} ₼</td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                            Kupon endirimi: <strong><span class="text-success">"{{ cart.coupon.code }}" {{ cart.coupon.discount }} %</span></strong>
+                                        </td>
+                                        <td>
+                                            – {{ cart.get_discount|floatformat:2 }} ₼
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td>
+                                            Mağaza endirim:
+                                        </td>
+                                        <td>
+                                            - {{ total_discount }} ₼
+                                        </td>
+                                    </tr>
+
                                     <tr class="tm-cart-pricebox-shipping">
                                         <td>(+) Çatdırılma haqqı</td>
                                         <td>15.00 ₼</td>
                                     </tr>
                                     <tr class="tm-cart-pricebox-total">
                                         <td>Cəmi</td>
-                                        <td>{{ cart.get_total_price }} ₼</td>
+                                        <td>{{ cart.get_total_price_after_discount|floatformat:2 }} ₼</td>
                                     </tr>
                                     </tbody>
                                 </table>

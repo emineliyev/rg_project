@@ -1,6 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+# 1. Django и сторонние библиотеки
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+# 2. Импорты из проекта
 from cart.cart import Cart
 from shop.models import Product
 from .wishlist import Wishlist
@@ -29,4 +31,3 @@ def wishlist_detail(request):
         'wishlist': wishlist,
         'cart': cart
     })
-

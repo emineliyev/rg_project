@@ -1,13 +1,15 @@
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render, redirect
-from account.forms import UserRegisterForm, ProfileForm, LoginForm
+# 1. Django и сторонние библиотеки
 from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect, render
 from django.views import View
-from django.contrib.auth import get_user_model
 
+# 2. Импорты из проекта
+from account.forms import LoginForm, ProfileForm, UserRegisterForm
 from orders.models import Order
+
 
 User = get_user_model()
 

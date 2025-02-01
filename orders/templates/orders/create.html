@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-    Sifariş
+    {{ block.super }}: Sifariş
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
@@ -22,22 +22,13 @@
     <!-- Checkout Area -->
     <div class="tm-section tm-checkout-area bg-white tm-padding-section">
         <div class="container">
-            <div class="tm-checkout-coupon">
-                <a href="#checkout-couponform" data-toggle="collapse"><span>Kupon kodunuz var?</span> Bura klikləyin və kodunuzu daxil edin.</a>
-                <div id="checkout-couponform" class="collapse">
-                    <form action="#" class="tm-checkout-couponform">
-                        <input type="text" id="coupon-field" placeholder="Kupon kodunu daxil edin"
-                               required="required">
-                        <button type="submit" class="tm-button">Təstiq edin</button>
-                    </form>
-                </div>
-            </div>
 
             <form class="tm-form tm-checkout-form" method="post">
             {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-6">
                         <h4 class="small-title">ÖDƏNİŞ MƏLUMATLARI</h4>
+                        <p><small class="text-secondary">Daxil etdiyiniz məlumatların düzgünlüyündən əmin olun.</small></p>
 
                         <!-- Billing Form -->
                         <div class="tm-checkout-billingform">
@@ -78,10 +69,8 @@
                                     <label for="{{ form.postal_code.id_for_label }}">Poçt kodu</label>
                                     {{ form.postal_code }}
                                 </div>
-                                <div class="tm-form-field">
-                                    <input type="checkbox" name="billform-dirrentswitch"
-                                           id="billform-dirrentswitch">
-                                    <label for="billform-dirrentswitch"><b>Ship to another address</b></label>
+                                <div>
+
                                 </div>
                             </div>
                         </div>
@@ -103,7 +92,6 @@
                                     <tr>
                                         <td>
                                             {{ item.product.name }}
-                                            <span class="old-price">{{ item.product.price }} ₼</span>
                                             {% if item.product.discount > 0 %}
                                                 {{ item.product.discounted_price }} ₼
                                                 {% else %}
@@ -112,7 +100,7 @@
                                             * {{ item.quantity }}
                                         </td>
                                         <td>
-                                            {{ item.total_price }} ₼
+                                            {{ item.total_price|floatformat:2 }} ₼
                                             <p class="text-danger">
                                                 {% if item.weight_option %}
                                                 <small>+ Çəki qiyməti: ( {{ item.weight_option.weight }} q ) {{ item.weight_option.price_modifier }} ₼</small>
@@ -121,35 +109,48 @@
                                         </td>
                                     </tr>
                                     {% endfor %}
-                                    </tbody>
-                                    <tfoot>
-                                    <tr class="tm-checkout-subtotal">
-                                        <td>Endirim</td>
-                                        <td>- {{ total_discount }} ₼</td>
+                                    {% if cart.coupon %}
+                                    	<tr>
+                                            <td>
+                                                Kupon endirimi: <strong><span class="text-success">"{{ cart.coupon.code }}" {{ cart.coupon.discount }} %</span></strong>
+                                            </td>
+                                        <td>
+                                            - {{ cart.get_discount|floatformat:2 }} ₼
+                                        </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr class="">
+                                        <td>Mağaza endirimi:</td>
+                                        <td>- {{ total_discount|floatformat:2 }} ₼</td>
                                     </tr>
-                                    <tr class="tm-checkout-shipping">
+                                    <tr class="">
                                         <td>(+) Çatdırılma haqqı</td>
                                         <td>0 ₼</td>
                                     </tr>
+                                    </tbody>
+                                    <tfoot>
                                     <tr class="tm-checkout-total">
                                         <td>CƏMİ</td>
-                                        <td>{{ cart.get_total_price }} ₼</td>
+                                        <td>{{ cart.get_total_price_after_discount|floatformat:2 }} ₼</td>
                                     </tr>
                                     </tfoot>
                                 </table>
+
                             </div>
 
                             <div class="tm-checkout-payment">
                                 <h4>Ödəniş metodunu seçin</h4>
                                 <div class="tm-form-inner">
-                                    <div class="tm-form-field">
-                                        <input type="radio" name="checkout-payment-method"
-                                               id="checkout-payment-banktransfer">
-                                        <label for="checkout-payment-banktransfer">Birbaşa Bank köçürməsi</label>
-                                        <div class="tm-checkout-payment-content">
-                                            <p>Hazırda bu üsül keçərli deyil.</p>
+                                    {% comment %}
+                                        <div class="tm-form-field">
+                                            <input type="radio" name="checkout-payment-method"
+                                                   id="checkout-payment-banktransfer">
+                                            <label for="checkout-payment-banktransfer">Birbaşa Bank köçürməsi</label>
+                                            <div class="tm-checkout-payment-content">
+                                                <p>Hazırda bu üsül keçərli deyil.</p>
+                                            </div>
                                         </div>
-                                    </div>
+
                                     <div class="tm-form-field">
                                         <input type="radio" name="checkout-payment-method"
                                                id="checkout-payment-checkpayment" checked="checked">
@@ -159,6 +160,7 @@
                                                 Store State / County, Store Postcode.</p>
                                         </div>
                                     </div>
+
                                     <div class="tm-form-field">
                                         <input type="radio" name="checkout-payment-method"
                                                id="checkout-payment-cashondelivery">
@@ -167,6 +169,8 @@
                                             <p>Məhsul qapıya şatdırıldığı zaman kuryerə.</p>
                                         </div>
                                     </div>
+
+
                                     <div class="tm-form-field">
                                         <input type="radio" name="checkout-payment-method"
                                                id="checkout-payment-paypal">
@@ -175,6 +179,8 @@
                                             <p>Hazırda bu üsül keçərli deyil.</p>
                                         </div>
                                     </div>
+                                    {% endcomment %}
+
                                     <div class="tm-form-field">
                                         <input type="radio" name="checkout-payment-method"
                                                id="checkout-payment-creditcard">

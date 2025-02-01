@@ -28,8 +28,13 @@ urlpatterns = [
     path('orders/', include('orders.urls', namespace='orders')),
 
     path('wishlist/', include('wishlist.urls', namespace='wishlist')),
+    path('coupons/', include('coupons.urls', namespace='coupons')),
     path('', include('shop.urls', namespace='shop')),
     path('account/', include('account.urls', namespace='account')),
+    path('about/', include('about.urls', namespace='about')),
+    path('rules/', include('parameters.urls', namespace='parameters')),
+
+    path('tinymce/', include('tinymce.urls')),
 
     path('verify-email/', VerifyEmailView.as_view(), name='verify_email'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='account/password_reset.html'),

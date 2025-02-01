@@ -13,6 +13,8 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 INSTALLED_APPS = [
+    'jazzmin',
+    'tinymce',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -24,6 +26,12 @@ INSTALLED_APPS = [
     'wishlist.apps.WishlistConfig',
     'account.apps.AccountConfig',
     'orders.apps.OrdersConfig',
+    'about.apps.AboutConfig',
+    'slider.apps.SliderConfig',
+    'partners.apps.PartnersConfig',
+    'parameters.apps.ParametersConfig',
+    'coupons.apps.CouponsConfig',
+    'mptt',
     'debug_toolbar',
 ]
 
@@ -57,6 +65,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart',
                 'wishlist.context_processors.wishlist',
+                'parameters.context_processors.contact_info',
             ],
         },
     },
@@ -92,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'az'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Baku'
 
 USE_I18N = True
 
@@ -103,6 +112,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'shop/static'),
 ]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 CART_SESSION_ID = 'cart'
 WISHLIST_SESSION_ID = 'wishlist'
@@ -116,10 +127,82 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'emineliyev87@gmail.com'
-EMAIL_HOST_PASSWORD = 'fmjejbwgajmvgfzx'
+EMAIL_HOST_USER = os.getenv('E_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('E_H_PASSWORD')
 DEFAULT_FROM_EMAIL = 'emineliyev87@gmail.com'
 ADMINS = [('Admin', 'emineliyev87@gmail.com')]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Адрес и порт Redis
+        'OPTIONS': {
+            'db': 1,  # Номер базы данных Redis
+        },
+        'KEY_PREFIX': 'core',  # Префикс ключей кеша
+    }
+}
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Rafig Jewellery",
+    "site_header": "İdarə etmə paneli",
+    "welcome_sign": "Sistemə xoş gəlmisiniz",
+    "search_model": ["auth.User", "shop.Product"],
+    # Иконки моделей в боковом меню (используйте FontAwesome 5)
+    "icons": {
+        "account.Account": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "shop.Product": "fas fa-box",
+        "shop.Comment": "fas fa-comment",
+        "orders.Order": "fas fa-wallet",
+        "about.About": "fa-solid fa-info",
+        "account.Country": "fa-solid fa-globe",
+        "account.City": "fa-solid fa-city",
+        "shop.Category": "fa-solid fa-list",
+        "shop.SuperSale": "fa-solid fa-percent",
+        "slider.Slider": "fa-solid fa-camera-retro",
+        "shop.Material": "fa-brands fa-slack",
+        "partners.Partner": "fa-solid fa-handshake",
+        "parameters.Phone": "fas fa-phone-volume",
+        "parameters.Email": "fas fa-at",
+        "parameters.ReturnsAndRefunds": "fas fa-sync-alt",
+        "parameters.DeliveryInformation": "fas fa-truck",
+    },
+
+    # Настройки бокового меню
+    "order_with_respect_to": ["auth", "myapp"],  # Сортировка моделей
+    "navigation_expanded": False,  # Открытое меню по умолчанию
+    "hide_apps": ["unwanted_app"],  # Скрыть приложения
+    "hide_models": ["myapp.OldModel"],  # Скрыть модели
+    "custom_links": {
+        "myapp": [
+            {
+                "name": "Добавить продукт",
+                "url": "admin:myapp_product_add",
+                "icon": "fas fa-plus",
+            }
+        ]
+    },
+    # Цветовая схема
+    "theme": "darkly",  # Выберите тему (см. список тем ниже)
+    "show_ui_builder": True,  # Показывать кнопку UI Builder
+
+    # Логотип (путь к статике)
+    "site_logo": "assets/images/logoAdmin.png",
+    "site_logo_classes": "img-circle"
+
+}
+
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 500,
+    'width': '100%',
+    'menubar': 'file edit view insert format tools table help',
+    'plugins': 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+    'toolbar': 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | '
+               'bullist numlist outdent indent | link image | print preview media fullpage | '
+               'forecolor backcolor emoticons',
+    'image_advtab': True,
+}
 
 # DEBUG-TOOLBAR
 INTERNAL_IPS = [

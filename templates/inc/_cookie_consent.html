@@ -1,0 +1,47 @@
+<div id="cookie-banner"
+     style="position: fixed; z-index: 9999; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: white; padding: 15px; text-align: center; display: none;">
+    <p>Biz sizin təcrübənizi yaxşılaşdırmaq üçün cookie-lərdən istifadə edirik. Saytdan istifadə etməyə davam etməklə,
+        bizim <a href="/privacy-policy/" style="color: #f1c40f;">Məxfilik Siyasətimizə</a> razılıq vermiş olursunuz.</p>
+    <button onclick="acceptCookies()" class="btn btn-success btn-sm">Qəbul et
+    </button>
+    <button onclick="declineCookies()" class="btn btn-danger btn-sm">Rədd et
+    </button>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!getCookie("cookies_accepted")) {
+            document.getElementById("cookie-banner").style.display = "block";
+        } else {
+            document.getElementById("cookie-settings-btn").style.display = "block";
+        }
+    });
+
+    function acceptCookies() {
+        document.cookie = "cookies_accepted=true; path=/; max-age=31536000"; // 1 il
+        document.getElementById("cookie-banner").style.display = "none";
+        document.getElementById("cookie-settings-btn").style.display = "block";
+    }
+
+    function declineCookies() {
+        document.cookie = "cookies_accepted=false; path=/; max-age=31536000"; // 1 il
+        document.getElementById("cookie-banner").style.display = "none";
+        document.getElementById("cookie-settings-btn").style.display = "block";
+    }
+
+    function showCookieBanner() {
+        document.getElementById("cookie-banner").style.display = "block";
+    }
+
+    function getCookie(name) {
+        let cookies = document.cookie.split("; ");
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].split("=");
+            if (cookie[0] === name) {
+                return cookie[1];
+            }
+        }
+        return null;
+    }
+</script>

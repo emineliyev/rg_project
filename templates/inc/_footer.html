@@ -13,12 +13,13 @@
                 <!-- Single Widget -->
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="single-widget widget-info">
-                        <a class="widget-info-logo" href="index.html"><img src="{% static 'assets/images/logo.png' %}" alt="logo"></a>
-                        <p>Lorem ipsum dolor sit amet, consect etur adipiscing elit.</p>
+                        <a class="widget-info-logo" href="{% url 'shop:index' %}">
+                            <img src="{% static 'assets/images/Logo.svg' %}" width="400" alt="logo"></a>
+
                         <ul>
-                            <li><b>Address :</b>2726 Avenue Papineau Montreal, QC, Canada</li>
-                            <li><b>Phone :</b><a href="tel:+18009156270">1-800-915-6270</a></li>
-                            <li><b>Email :</b><a href="mailto:info@example.com">info@example.com</a></li>
+                            <li><b>Ünvan :</b>{{ address }}</li>
+                            <li><b>Telefon :</b><a href="tel:+994{{ global_phone }}">{{ global_phone }}</a></li>
+                            <li><b>E-poçt :</b><a href="mailto:{{ global_email }}">{{ global_email }}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -27,14 +28,14 @@
                 <!-- Single Widget -->
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="single-widget widget-quicklinks">
-                        <h6 class="widget-title">Useful Link</h6>
+                        <h6 class="widget-title">Faydalı keçidlər</h6>
                         <ul>
-                            <li><a href="about.html">About Us</a></li>
-                            <li><a href="#">Delivery Info</a></li>
-                            <li><a href="#">Privacy & Policy</a></li>
-                            <li><a href="#">Returns & Refunds</a></li>
-                            <li><a href="#">Terms & Conditions</a></li>
-                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="{% url 'about:about' %}">Haqqımızda</a></li>
+                            <li><a href="{% url 'parameters:delivery_information' %}">Çatdırılma məlumatı</a></li>
+                            <li><a href="{% url 'parameters:privacy_policy' %}">Məxfilik və Siyasət</a></li>
+                            <li><a href="{% url 'parameters:returns_and_refunds' %}">Qaytarmalar və Geri Ödənişlər</a></li>
+                            <li><a href="{% url 'parameters:terms_and_conditions' %}">Qaydalar və Şərtlər</a></li>
+                            <li><a href="{% url 'shop:contact' %}">Bizimlə Əlaqə</a></li>
                         </ul>
                     </div>
                 </div>
@@ -43,14 +44,12 @@
                 <!-- Single Widget -->
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="single-widget widget-quicklinks">
-                        <h6 class="widget-title">My Account</h6>
+                        <h6 class="widget-title">Hesabım</h6>
                         <ul>
-                            <li><a href="my-account.html">My account</a></li>
-                            <li><a href="cart.html">Cart</a></li>
-                            <li><a href="wishlist.html">Wishlist</a></li>
-                            <li><a href="#">Newsletter</a></li>
-                            <li><a href="#">Check out</a></li>
-                            <li><a href="#">Frequently Questions</a></li>
+                            <li><a href="{% url 'account:profile' %}">Hesabım</a></li>
+                            <li><a href="{% url 'cart:cart_detail' %}">Səbət</a></li>
+                            <li><a href="{% url 'wishlist:wishlist_detail' %}">İstək siyahısı</a></li>
+                            <li><a href="#">Tez-tez verilən suallar</a></li>
                         </ul>
                     </div>
                 </div>

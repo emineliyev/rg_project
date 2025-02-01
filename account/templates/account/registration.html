@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-	Qeydiyyat
+	{{ block.super }}: Qeydiyyat
 {% endblock %}
 {% block content %}
 <!-- Breadcrumb Area -->
@@ -48,7 +48,7 @@
                             <div>
                                 <input type="checkbox" id="register-terms" name="register-terms">
                                 <label for="register-terms">
-                                    Mən vebsaytın <a href=""> şərtlərini</a> oxudum və razılaşdım
+                                    Mən vebsaytın <a class="text-danger" href="{% url 'parameters:terms_and_conditions' %}"> şərtlərini</a> oxudum və razılaşdım
                                 </label>
                             </div>
                         </div>

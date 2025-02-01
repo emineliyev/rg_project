@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Bütün məhsullar{% endblock %}
+{% load cache %}
+{% block title %}{{ block.super }}: Bütün məhsullar{% endblock %}
 {% block content %}
+
     <!-- Breadcrumb Area -->
     <div class="tm-breadcrumb-area tm-padding-section bg-grey"
          data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
@@ -23,22 +25,29 @@
             <div class="row">
 
                 <div class="col-lg-9 col-12 order-1 order-lg-2">
-                    <form action="#" class="tm-shop-header">
+                    <form action="" method="get" class="tm-shop-header">
                         <div class="tm-shop-productview">
                             <span>Görünüş:</span>
                             <button data-view="grid" class="active"><i class="ion-android-apps"></i></button>
                             <button data-view="list"><i class="ion-android-menu"></i></button>
                         </div>
-                        <p class="tm-shop-countview">16-dan 1-dən 9-a qədər göstərilir </p>
-                        <select>
-                            <option value="value">Default Sorting</option>
-                            <option value="value">Name A-Z</option>
-                            <option value="value">Date</option>
-                            <option value="value">Best Sellers</option>
-                            <option value="value">Trending</option>
+
+                        <p class="tm-shop-countview">{{ all_products }} məhsuldan {{ product_count }} məhsul göstərilir</p>
+
+                        <select name="sort" onchange="this.form.submit()">
+                            <option value="">Sıralama</option>
+                            <option value="name" {% if current_sort == "name" %}selected{% endif %}>Məhsul adı</option>
+                            <option value="price_asc" {% if current_sort == "price_asc" %}selected{% endif %}>Uzucdan
+                                bahaya
+                            </option>
+                            <option value="price_desc" {% if current_sort == "price_desc" %}selected{% endif %}>Bahadan
+                                ucuza
+                            </option>
+                            <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>Öncə
+                                yeniliklər
+                            </option>
                         </select>
                     </form>
-
                     <div class="tm-shop-products">
                         <div class="row mt-30-reverse">
                             <!-- Single Product -->
@@ -48,7 +57,8 @@
                                         <div class="tm-product-topside">
                                             <div class="tm-product-images">
                                                 {% for image in product.images.all %}
-                                                    <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
+                                                    <img src="{{ image.image.url }}"
+                                                         alt="{{ image.alt_text|default:'product image' }}">
                                                 {% endfor %}
                                             </div>
                                             <ul class="tm-product-actions">
@@ -60,8 +70,8 @@
                                                             <button type="submit" disabled class="btn btn-secondary">
                                                                 <i class="ion-android-cart"></i> Səbətə at
                                                             </button>
-                                                                {% else %}
-                                                                <button type="submit" class="tm-button ">
+                                                        {% else %}
+                                                            <button type="submit" class="tm-button ">
                                                                 <i class="ion-android-cart"></i> Səbətə at
                                                             </button>
                                                         {% endif %}
@@ -79,9 +89,9 @@
                                                 </li>
                                             </ul>
                                             {% if product.is_in_stock < 1 %}
-                                            <div class="tm-product-badges">
+                                                <div class="tm-product-badges">
                                                     <span class="tm-product-badges-soldout">Tükənib</span>
-                                            </div>
+                                                </div>
                                             {% endif %}
                                             <div class="tm-product-badges">
                                                 {% if product.is_new %}
@@ -94,7 +104,7 @@
                                         </div>
                                         <div class="tm-product-bottomside">
                                             <h6 class="tm-product-title">
-                                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
+                                                <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
                                             </h6>
                                             <div class="tm-ratingbox">
                                                 {% for i in "12345"|slice:":" %}
@@ -110,7 +120,7 @@
                                                 <span class="tm-product-price">{{ product.price }} ₼</span>
                                             {% endif %}
                                             <div class="tm-product-content">
-                                                <p>{{ product.description }}</p>
+                                                <p>{{ product.description|safe }}</p>
                                                 <ul class="tm-product-actions">
                                                     <li>
                                                         <form method="post"
@@ -118,14 +128,15 @@
                                                             {% csrf_token %}
                                                             <input type="hidden" name="quantity" value="1">
                                                             {% if product.is_in_stock < 1 %}
-                                                            <button type="submit" disabled class="btn btn-secondary">
-                                                                <i class="ion-android-cart"></i> Səbətə at
-                                                            </button>
-                                                                {% else %}
+                                                                <button type="submit" disabled
+                                                                        class="btn btn-secondary">
+                                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                                </button>
+                                                            {% else %}
                                                                 <button type="submit" class="tm-button ">
-                                                                <i class="ion-android-cart"></i> Səbətə at
-                                                            </button>
-                                                        {% endif %}
+                                                                    <i class="ion-android-cart"></i> Səbətə at
+                                                                </button>
+                                                            {% endif %}
                                                         </form>
                                                     </li>
                                                     <li>
@@ -148,70 +159,128 @@
                         </div>
                     </div>
 
-                    <div class="tm-pagination mt-50">
-                        <ul>
-                            <li class="is-active"><a href="products.html">1</a></li>
-                            <li><a href="products.html">2</a></li>
-                            <li><a href="products.html">3</a></li>
-                            <li><a href="products.html">4</a></li>
-                            <li><a href="products.html"><i class="ion-chevron-right"></i></a></li>
-                        </ul>
-                    </div>
+                    {% if page_obj.paginator.num_pages > 1 %}
+                        <div class="tm-pagination mt-50">
+                            <ul>
+                                {% if page_obj.has_previous %}
+                                    <li>
+                                        <a href="?page=1{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                            <i class="ion-chevron-left"></i> Birinci
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?page=
+                                                {{ page_obj.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                            <i class="ion-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if num == page_obj.number %}
+                                        <li class="is-active"><a href="?page=
+                                                {{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                                        <li><a href="?page=
+                                                {{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li>
+                                        <a href="?page=
+                                                {{ page_obj.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                            <i class="ion-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?page=
+                                                {{ page_obj.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                            Sonuncu <i class="ion-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <!-- Widgets -->
                 <div class="col-lg-3 col-12 order-2 order-lg-1">
                     <div class="widgets">
+
                         <!-- Single Widget -->
+
                         <div class="single-widget widget-categories">
                             <h6 class="widget-title">Kateqoriyalar</h6>
-                            <ul>
-                                {% for category in categories %}
-                                    <li><a href="products.html">{{ category.name }}</a></li>
-                                {% endfor %}
+                            {% load mptt_tags %}
+                            <ul class="menu">
+                                {% recursetree categories %}
+                                    <li>
+                                        <a href="{{ node.get_absolute_url }}"
+                                           class="menu-item {% if not node.is_leaf_node %}has-children{% endif %}">
+                                            {{ node.name }}
+                                            {% if not node.is_leaf_node %}
+                                                <i class="ion-arrow-right-b arrow"></i>
+                                            {% endif %}
+                                        </a>
+                                        {% if not node.is_leaf_node %}
+                                            <ul class=" submenu">
+                                                {{ children }}
+                                            </ul>
+                                        {% endif %}
+                                    </li>
+                                {% endrecursetree %}
                             </ul>
-                        </div>
-                        <!--// Single Widget -->
-                        <!-- Single Widget -->
-                        <div class="single-widget widget-pricefilter">
-                            <h6 class="widget-title">Qiymətə görə filter</h6>
-                            <div class="widget-pricefilter-inner">
-                                <div class="tm-rangeslider" data-range_min="0"
-                                     data-range_max="{{ max_salary|floatformat:0 }}"
-                                     data-cur_min="0" data-cur_max="{{ max_salary|floatformat:0 }}">
-                                    <div class="tm-rangeslider-bar nst-animating"></div>
-                                    <span class="tm-rangeslider-leftgrip nst-animating" tabindex="0"></span>
-                                    <span class="tm-rangeslider-rightgrip nst-animating" tabindex="0"></span>
-                                </div>
-                                <div class="widget-pricefilter-actions">
-                                    <p class="widget-pricefilter-price">
-                                        Qiymət: <span class="tm-rangeslider-leftlabel">308</span> ₼ - <span
-                                            class="tm-rangeslider-rightlabel">798</span> ₼
-                                    </p>
-                                    <button class="widget-pricefilter-button">Filter</button>
-                                </div>
-                            </div>
                         </div>
                         <!--// Single Widget -->
 
                         <!-- Single Widget -->
+                        <div class="single-widget widget-pricefilter">
+                            <h6 class="widget-title">Qiymətə görə filter</h6>
+                            <form method="get" id="price-filter-form">
+                                <div class="widget-pricefilter-inner">
+                                    <div class="widget-pricefilter-inputs">
+                                        <label for="price_min_input">Minimum qiymət:</label>
+                                        <input type="number" id="price_min_input" name="price_min"
+                                               value="{{ request.GET.price_min|default:0 }}" min="0"
+                                               placeholder="{{ min_salary|floatformat:0 }}" step="0.01">
+
+                                        <label for="price_max_input">Maksimum qiymət:</label>
+                                        <input type="number" id="price_max_input" name="price_max"
+                                               value="{{ request.GET.price_max|default:max_salary|floatformat:2 }}"
+                                               min="0"
+                                               placeholder="{{ max_salary|floatformat:0 }} ₼" step="0.01">
+                                    </div>
+                                    <div class="widget-pricefilter-actions">
+                                        <button type="submit" class="widget-pricefilter-button">Filter</button>
+                                        <a href="{% url 'shop:products' %}" type="reset" class="widget-pricefilter-button text-white">Sıfırla</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!--// Single Widget -->
+
+                        <!-- Single Widget -->
                         <div class="single-widget widget-popularproduct">
-                            <h6 class="widget-title">Populyar Məhsular</h6>
+                            <h6 class="widget-title">Ən çox satılanlar</h6>
                             <ul>
                                 {% for popular_product in popular_products %}
                                     <li>
-                                        <a href="{% url 'shop:product_detail' popular_product.id %}"
-                                           class="widget-popularproduct-image">
-                                            {% for image in popular_product.images.all %}
-                                                {% if forloop.first %}
-                                                    <img src="{{ image.image.url }}"
-                                                         alt="{{ image.alt_text|default:'product image' }}">
-                                                {% endif %}
-                                            {% endfor %}
-                                        </a>
+                                        {% for image in popular_product.images.all %}
+                                            {% if forloop.first %}
+                                                <a href="{{ popular_product.get_absolute_url }}"
+                                                   class="widget-popularproduct-image">
+                                                    <img src="{{ image.image.url }}" alt="{{ popular_product.name }}">
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
                                         <div class="widget-popularproduct-content">
                                             <h6>
-                                                <a href="{% url 'shop:product_detail' popular_product.id %}">{{ popular_product.name }}</a>
+                                                <a href="{{ popular_product.get_absolute_url }}">{{ popular_product.name }}</a>
                                             </h6>
                                             {% if popular_product.discount > 0 %}
                                                 <span class="old-price">{{ popular_product.price }} ₼</span>
@@ -222,9 +291,11 @@
                                         </div>
                                     </li>
                                 {% endfor %}
+
                             </ul>
                         </div>
                         <!--// Single Widget -->
+
                     </div>
                 </div>
                 <!--// Widgets -->
@@ -233,4 +304,49 @@
         </div>
     </div>
     <!--// Products Wrapper -->
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("price-filter-form");
+            const priceMinInput = document.getElementById("price_min");
+            const priceMaxInput = document.getElementById("price_max");
+            const leftLabel = document.querySelector(".tm-rangeslider-leftlabel");
+            const rightLabel = document.querySelector(".tm-rangeslider-rightlabel");
+            const slider = document.querySelector(".tm-rangeslider");
+
+            // Начальные значения
+            let minValue = parseFloat(slider.getAttribute("data-cur_min"));
+            let maxValue = parseFloat(slider.getAttribute("data-cur_max"));
+
+            // Функция обновления скрытых полей и отображения
+            function updateValues(min, max) {
+                priceMinInput.value = min;
+                priceMaxInput.value = max;
+                leftLabel.textContent = min;
+                rightLabel.textContent = max;
+            }
+
+            // Слушаем изменения на ползунке (эмуляция)
+            slider.addEventListener("mousemove", function (event) {
+                // Пример синхронизации значений
+                const rect = slider.getBoundingClientRect();
+                const percent = (event.clientX - rect.left) / rect.width;
+
+                if (event.target.classList.contains("tm-rangeslider-leftgrip")) {
+                    minValue = Math.max(0, Math.min(maxValue - 1, percent * slider.dataset.range_max));
+                } else if (event.target.classList.contains("tm-rangeslider-rightgrip")) {
+                    maxValue = Math.min(slider.dataset.range_max, Math.max(minValue + 1, percent * slider.dataset.range_max));
+                }
+
+                updateValues(minValue.toFixed(0), maxValue.toFixed(0));
+            });
+
+            // Обновляем значения перед отправкой формы
+            form.addEventListener("submit", function () {
+                updateValues(minValue.toFixed(0), maxValue.toFixed(0));
+            });
+        });
+    </script>
+
 {% endblock %}

@@ -6,6 +6,9 @@ from .tasks import notify_low_stock, notify_new_order
 
 @receiver(post_save, sender=OrderItem)
 def reduce_stock_and_trigger_tasks(sender, instance, created, **kwargs):
+    """
+    Сигнал для уведомление о низком уровне товара
+    """
     if created:  # Только при создании нового OrderItem
         product = instance.product
         product.quantity_in_stock -= instance.quantity

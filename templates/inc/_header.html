@@ -6,10 +6,18 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8 col-12">
-                    <ul class="tm-header-info">
-                        <li><a href="tel:18883456789"><i class="ion-ios-telephone"></i>1-888-345-6789</a></li>
-                        <li><a href="mailto:contact@example.com"><i class="ion-android-mail"></i>contact@example.com</a></li>
-                    </ul>
+                <ul class="tm-header-info">
+                    <li>
+                        {% if global_phone %}
+                            <a href="tel:+994{{ global_phone }}"><i class="ion-ios-telephone"></i> {{ global_phone }}</a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if global_email %}
+                            <a href="mailto:{{ global_email }}"><i class="ion-android-mail"></i> {{ global_email }}</a>
+                        {% endif %}
+                    </li>
+                </ul>
                 </div>
                 <div class="col-lg-4 col-12">
                     <div class="tm-header-options">
@@ -63,13 +71,13 @@
             <div class="row align-items-center">
                 <div class="col-lg-3 col-6 order-1 order-lg-1">
                     <a href="{% url 'shop:index' %}" class="tm-header-logo">
-                        <img src="{% static 'assets/images/logo.png' %}" alt="surose">
+                        <img width="300"  src="{% static 'assets/images/Logo.svg' %}"  alt="Rafig Jewellery">
                     </a>
                 </div>
                 <div class="col-lg-6 col-12 order-3 order-lg-2">
-                    <form class="tm-header-search">
-                        <input type="text" placeholder="Məhsul axtarın...">
-                        <button><i class="ion-android-search"></i></button>
+                    <form class="tm-header-search"  action="{% url 'shop:products' %}" method="get">
+                        <input type="text" name="q" value="{{ query }}" placeholder="Məhsul axtarın...">
+                        <button type="submit"><i class="ion-android-search"></i></button>
                     </form>
                 </div>
                 <div class="col-lg-3 col-6 order-2 order-lg-3">
@@ -110,9 +118,9 @@
             <nav class="tm-header-nav">
                 <ul>
                     <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
-                    <li><a href="about.html">Haqqımızda</a></li>
+                    <li><a href="{% url 'about:about' %}">Haqqımızda</a></li>
                     <li><a href="{% url 'shop:products' %}">Məhsullar</a></li>
-                    <li><a href="contact.html">Əlaqə</a></li>
+                    <li><a href="{% url 'shop:contact' %}">Əlaqə</a></li>
                 </ul>
             </nav>
         </div>

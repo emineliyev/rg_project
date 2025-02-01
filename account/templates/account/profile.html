@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-    Profiliniz
+    {{ block.super }}: Profiliniz
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
@@ -64,9 +64,9 @@
                                     <tr>
                                         <th class="tm-myaccount-orders-col-id">SİFARİŞ ID</th>
                                         <th class="tm-myaccount-orders-col-date">TARİX</th>
-                                        <th class="tm-myaccount-orders-col-status">STATUS</th>
+                                        <th class="tm-myaccount-orders-col-status">SİFARİŞ STATUS</th>
                                         <th class="tm-myaccount-orders-col-total">ÜMUMİ</th>
-                                        <th class="tm-myaccount-orders-col-total">ÖDƏNİLİB</th>
+                                        <th class="tm-myaccount-orders-col-total">ÖDƏNİŞ STATUS</th>
                                         <th class="tm-myaccount-orders-col-view">BAXIN</th>
                                     </tr>
                                     </thead>
@@ -76,11 +76,11 @@
                                         <td>RG-{{ order.id }}</td>
                                         <td>{{ order.created_at|date:"d-m-Y H:i" }}</td>
                                         <td>{{ order.get_status_display  }}</td>
-                                        <td>{{ order.get_total }} ₼ {{ order.quantity }}</td>
+                                        <td>{{ order.get_total_cost_before_discount }} ₼ {{ order.quantity }}</td>
                                         {% if order.paid %}
-                                        <td class="text-success"><strong>Bəli</strong></td>
+                                        <td class="text-success"><strong>ÖDƏNİLİB</strong></td>
                                             {% else %}
-                                        <td class="text-danger"><strong>Xeir</strong></td>
+                                        <td class="text-danger"><strong>ÖDƏNİLMƏYİB</strong></td>
                                         {% endif %}
                                         <td><a href="{% url 'orders:order_detail' order.id %}" class="tm-button tm-button-small">Baxın</a></td>
                                     </tr>

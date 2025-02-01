@@ -182,5 +182,69 @@
     text-align: center;
     background-color: #f0f0f0; /* Фоновый цвет */
     font-weight: bold; /* Сделать текст жирным */
-    color: #1F584C;
+
+}
+
+.widget-categories {
+    width: 250px;
+    color: #fff;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    border-radius: 8px;
+}
+
+.widget-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+    background-color: #1F584C;
+    color: #fff;
+}
+.menu-link:hover{
+    color: #fff;
+}
+.menu-item.has-children .arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+.submenu {
+    list-style: none;
+    margin-left: 10px;
+    padding: 0 0 0 20px;
+    display: none; /* Скрываем подменю по умолчанию */
+}
+
+.submenu.open {
+    display: block; /* Показываем подменю, когда оно открыто */
+}
+
+.arrow {
+    font-size: 14px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+.arrow.open {
+    transform: rotate(90deg);
 }

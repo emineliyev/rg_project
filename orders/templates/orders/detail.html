@@ -2,7 +2,7 @@
 {% load static %}
 {% load custom_filters %}
 {% block title %}
-    Sifariş
+    {{ block.super }}: Sifariş
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
@@ -20,35 +20,42 @@
     <!--// Breadcrumb Area -->
     <div class="tm-section tm-checkout-area bg-white tm-padding-section">
         <div class="container">
-            <table class="table table-bordered mb-0">
-                <thead>
-                <tr>
-                    <th class="tm-myaccount-orders-col-id">Məhsul</th>
-                    <th class="tm-myaccount-orders-col-id">Çəki</th>
-                    <th class="tm-myaccount-orders-col-id">Qiymət</th>
-                    <th class="tm-myaccount-orders-col-id">Miqdar</th>
-                    <th class="tm-myaccount-orders-col-id">Cəmi</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for item in order_items %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>
-                            {% if item.weight_option %}
-                                {{ item.weight_option.weight }} q
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td>{{ item.price }} ₼</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.quantity|multiply:item.price }} ₼</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <h3 class="mt-3 text-secondary">Cəmi məbləğ: {{ total_price }} ₼</h3>
+                        <table class="table table-bordered mb-0">
+                            <thead>
+                            <tr>
+                                <th class="tm-myaccount-orders-col-id">Məhsul</th>
+                                <th class="tm-myaccount-orders-col-id">Çəki</th>
+                                <th class="tm-myaccount-orders-col-id">Məbləğ</th>
+                                <th class="tm-myaccount-orders-col-id">Miqdar</th>
+                                <th class="tm-myaccount-orders-col-id">Cəm məbləğ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in order_items %}
+                                <tr>
+                                    <td>
+                                        {% if item.product.images.first %}
+                                            <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" width="50">
+                                        {% else %}
+                                            <span>Şəkil yoxdur</span>
+                                        {% endif %}
+                                        <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+                                    </td>
+                                    <td>
+                                        {% if item.weight_option %}
+                                            {{ item.weight_option.weight }} q
+                                        {% else %}
+                                            Çəki seçilməyib
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.price }} ₼</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.quantity|multiply:item.price }} ₼</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <h3 class="mt-3 text-secondary">Cəmi məbləğ: {{ total_price }} ₼</h3>
         </div>
     </div>
 {% endblock %}
