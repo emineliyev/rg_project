@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cache %}
 {% block title %}{{ block.super }}: {{ product.name }}{% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
@@ -67,12 +68,12 @@
                                     <span class="tm-prodetails-price">
                                             {% if product.discount > 0 %}
                                                 <del id="originalPrice"
-                                                     data-base-price="{{ product.price }}">{{ product.price }}₼</del>
+                                                     data-base-price="{{ product.price|floatformat:2 }}">{{ product.price|floatformat:2 }}₼</del>
                                                 <span id="finalPrice"
-                                                      data-discounted-price="{{ product.discounted_price }}">{{ product.discounted_price }}₼</span>
+                                                      data-discounted-price="{{ product.discounted_price|floatformat:2 }}">{{ product.discounted_price|floatformat:2 }}₼</span>
                                             {% else %}
-                                                <span id="originalPrice" data-base-price="{{ product.price }}"></span>
-                                                <span id="finalPrice">{{ product.price }}₼</span>
+                                                <span id="originalPrice" data-base-price="{{ product.price|floatformat:2 }}"></span>
+                                                <span id="finalPrice">{{ product.price|floatformat:2 }}₼</span>
                                             {% endif %}
                                         </span>
 
@@ -85,10 +86,10 @@
                                     </div>
 
                                     <div class="tm-prodetails-infos">
-                                        <div class="tm-prodetails-singleinfo">
+                                        <div class="tm-prodetails-singleinfo mb-2">
                                             <b>Məhsul kodu : </b>{{ product.article }}
                                         </div>
-                                        <div class="tm-prodetails-singleinfo">
+                                        <div class="tm-prodetails-singleinfo mb-2">
                                             <b>Kateqoriya : </b>
                                             <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
                                         </div>
@@ -101,7 +102,7 @@
 {#                                                <li><a href="#">necklaces</a></li>#}
 {#                                            </ul>#}
 {#                                        </div>#}
-                                        <div class="tm-prodetails-singleinfo">
+                                        <div class="tm-prodetails-singleinfo mb-2">
                                             <b>Əlçatan : </b>
                                             <span class="color-theme">
                                                 {% if product.is_in_stock %}
@@ -129,8 +130,8 @@
                                                 {% for option in weight_options %}
                                                     <option value="{{ option.id }}"
                                                             data-price-modifier="{{ option.price_modifier }}">
-                                                        {{ option.weight }} q - {{ option.carat }} K
-                                                        (+{{ option.price_modifier }} ₼)
+                                                        {{ option.weight|floatformat:0 }} q - {{ option.carat|floatformat:0 }} K
+                                                        (+{{ option.price_modifier|floatformat:2 }} ₼)
                                                     </option>
                                                 {% endfor %}
                                             </select>
@@ -199,11 +200,12 @@
                                                     </h6>
                                                     <span class="tm-comment-date">{{ comment.create_at|date:'d.m.Y' }} </span>
                                                     <div class="tm-ratingbox">
-                                                        {% for i in "12345"|make_list %}
-                                                            <span class="{% if forloop.counter <= comment.rating %}is-active{% endif %}">
-                                                                <i class="ion-android-star-outline"></i>
-                                                            </span>
-                                                        {% endfor %}
+                                                {% for i in "12345"|slice:":" %}
+                                                    <span class="{% if i <= average_rating|floatformat:0 %}is-active{% endif %}">
+                                                        <i class="ion-android-star-outline"></i>
+                                                    </span>
+                                                {% endfor %}
+
                                                     </div>
 
                                                     <p>{{ comment.text }}</p>

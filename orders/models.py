@@ -15,7 +15,6 @@ from coupons.models import Coupon
 from shop.models import Product, WeightOption
 
 
-
 class Order(models.Model):
     """
     Модель заказа

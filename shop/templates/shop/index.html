@@ -33,16 +33,12 @@
                     <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                         <div class="tm-product tm-scrollanim">
                             <div class="tm-product-topside">
-
                                 <div class="tm-product-images">
-                                 {% cache 900 product_images popular_product.id %}
                                     {% for image in popular_product.images.all %}
                                         <img src="{{ image.image.url }}"
                                              alt="{{ image.alt_text|default:'product image' }}">
                                     {% endfor %}
-                                {% endcache %}
                                 </div>
-
                                 <ul class="tm-product-actions">
                                     <li>
                                         <form method="post" action="{% url 'cart:cart_add' popular_product.id %}">
@@ -81,7 +77,7 @@
                                         <span class="tm-product-badges-new">Yeni</span>
                                     {% endif %}
                                     {% if popular_product.discount > 0 %}
-                                        <span class="tm-product-badges-sale">- {{ popular_product.discount }} %</span>
+                                        <span class="tm-product-badges-sale">- {{ popular_product.discount|floatformat:0 }} %</span>
                                     {% endif %}
                                 </div>
 
@@ -99,10 +95,10 @@
                                     {% endfor %}
                                 </div>
                                 {% if popular_product.discount > 0 %}
-                                    <span class="old-price">{{ popular_product.price }} ₼</span>
-                                    <span class="tm-product-price">{{ popular_product.discounted_price }} ₼</span>
+                                    <span class="old-price">{{ popular_product.price|floatformat:2 }} ₼</span>
+                                    <span class="tm-product-price">{{ popular_product.discounted_price|floatformat:2 }} ₼</span>
                                 {% else %}
-                                    <span class="tm-product-price">{{ popular_product.price }} ₼</span>
+                                    <span class="tm-product-price">{{ popular_product.price|floatformat:2 }} ₼</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -136,11 +132,9 @@
                             <div class="tm-product-topside">
 
                                 <div class="tm-product-images">
-                                    {% cache 900 product_images new_product.id %}
                                     {% for image in new_product.images.all %}
                                         <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'product image' }}">
                                     {% endfor %}
-                                    {% endcache %}
                                 </div>
 
                                 <ul class="tm-product-actions">
@@ -180,7 +174,7 @@
                                         <span class="tm-product-badges-new">Yeni</span>
                                     {% endif %}
                                     {% if new_product.discount > 0 %}
-                                        <span class="tm-product-badges-sale">- {{ new_product.discount }} %</span>
+                                        <span class="tm-product-badges-sale">- {{ new_product.discount|floatformat:0 }} %</span>
                                     {% endif %}
                                 </div>
 
@@ -197,10 +191,10 @@
                                     {% endfor %}
                                 </div>
                                 {% if new_product.discount > 0 %}
-                                    <span class="old-price">{{ new_product.price }} ₼</span>
-                                    <span class="tm-product-price">{{ new_product.discounted_price }} ₼</span>
+                                    <span class="old-price">{{ new_product.price|floatformat:2 }} ₼</span>
+                                    <span class="tm-product-price">{{ new_product.discounted_price|floatformat:2 }} ₼</span>
                                 {% else %}
-                                    <span class="tm-product-price">{{ new_product.price }} ₼</span>
+                                    <span class="tm-product-price">{{ new_product.price|floatformat:2 }} ₼</span>
                                 {% endif %}
                             </div>
                         </div>

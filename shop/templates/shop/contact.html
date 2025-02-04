@@ -5,13 +5,13 @@
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
-    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
         <div class="container">
             <div class="tm-breadcrumb">
-                <h2>Contact Us</h2>
+                <h2>Bizimlə əlaqə saxlayın</h2>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li>About</li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                    <li>Bizimlə əlaqə</li>
                 </ul>
             </div>
         </div>

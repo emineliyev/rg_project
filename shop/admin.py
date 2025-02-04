@@ -100,7 +100,9 @@ class SuperSaleAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()}
     }
-    list_display = ('formatted_title', 'create_at')
+    list_display = ('formatted_title', 'create_at', 'status')
+    list_editable = ['status']
+
 
     def formatted_title(self, obj):
         return format_html(obj.title)  # Это позволит рендерить HTML

@@ -2,14 +2,14 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Prefetch, Sum, F
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views import View
 
 # 2. Импорты из проекта
 from account.forms import LoginForm, ProfileForm, UserRegisterForm
-from orders.models import Order
-
+from orders.models import Order, OrderItem
 
 User = get_user_model()
 
@@ -72,22 +72,48 @@ def user_login(request):
 # @login_required
 # def profile(request):
 #     user = request.user  # Получаем текущего пользователя
+#     orders = Order.objects.filter(user=user)  # Получаем заказы текущего пользователя
+#
 #     if request.method == 'POST':
 #         form = ProfileForm(request.POST, request.FILES, instance=user)
 #         if form.is_valid():
+#             # Сохраняем профиль
 #             form.save()
-#             messages.success(request, f'Your account has been updated!')
+#
+#             # Обрабатываем изменение пароля
+#             old_password = form.cleaned_data.get('old_password')
+#             new_password = form.cleaned_data.get('new_password')
+#             if old_password and new_password:
+#                 if not user.check_password(old_password):
+#                     messages.error(request, "Cari şifrə səhv daxil edilib.")
+#                 else:
+#                     user.set_password(new_password)
+#                     user.save()
+#                     messages.success(request, "Şifrə uğurla dəyişdirildi.")
+#
+#             messages.success(request, "Profiliniz yeniləndi!")
 #             return redirect('account:profile')
 #     else:
 #         form = ProfileForm(instance=user)  # Предварительно заполняем форму данными текущего пользователя
-#     context = {'form': form}
+#
+#     context = {
+#         'form': form,
+#         'orders': orders,  # Добавляем заказы в контекст
+#     }
 #     return render(request, 'account/profile.html', context=context)
 
 
 @login_required
 def profile(request):
     user = request.user  # Получаем текущего пользователя
-    orders = Order.objects.filter(user=user)  # Получаем заказы текущего пользователя
+    orders = Order.objects.filter(user=user).prefetch_related(
+        Prefetch(
+            'items',
+            queryset=OrderItem.objects.select_related('product', 'weight_option')
+        )
+    ).annotate(
+        total_cost=Sum(F('items__price') * F('items__quantity'))
+    )
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=user)

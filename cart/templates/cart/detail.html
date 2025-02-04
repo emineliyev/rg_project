@@ -124,7 +124,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6">
                         <div class="tm-buttongroup d-flex">
-                            <a href="#" class="tm-button">Alış-verişə davam edin</a>
+                            <a href="{% url 'shop:products' %}" class="tm-button">Alış-verişə davam edin</a>
                             <form method="post" action="{% url 'cart:cart_clear' %}">
                             {% csrf_token %}
                             <button type="submit" class="tm-button tm-button-dark">Səbəti təmizlə</button>

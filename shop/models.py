@@ -66,7 +66,7 @@ class Product(models.Model):
                                    verbose_name='Endirim (%)')
     quantity_in_stock = models.PositiveSmallIntegerField(
         verbose_name='Stokda olan miqdar')
-    popularity = models.PositiveIntegerField(default=0, verbose_name="Популярность")
+    popularity = models.PositiveIntegerField(default=0, verbose_name="Populyarlıq")
     create_at = models.DateTimeField(auto_now_add=True, verbose_name='Əlavə edilib')
     update_at = models.DateTimeField(auto_now=True, verbose_name='Yenilənib')
 

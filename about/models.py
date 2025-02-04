@@ -9,6 +9,12 @@ class About(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        """Разрешает хранить только одну запись в базе"""
+        if About.objects.exists() and not self.pk:
+            raise ValueError("Можно создать только одну запись 'О нас'.")
+        return super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'Haqqımızda'
         verbose_name_plural = 'Haqqımızda'

@@ -6,13 +6,14 @@
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
-    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
         <div class="container">
             <div class="tm-breadcrumb">
-                <h2>Hesabınız</h2>
+                <h2>Sifarişiniz</h2>
                 <ul>
-                    <li><a href="index.html">Əsas səhifə</a></li>
-                    <li>Hesabım</li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                    <li><a href="{% url 'account:profile' %}">Sifrişlər</a></li>
+                    <li>Sifarişiniz</li>
                 </ul>
             </div>
         </div>
@@ -20,7 +21,7 @@
     <!--// Breadcrumb Area -->
     <div class="tm-section tm-checkout-area bg-white tm-padding-section">
         <div class="container">
-                        <table class="table table-bordered mb-0">
+                        <table class="table table-bordered mb-0 text-center">
                             <thead>
                             <tr>
                                 <th class="tm-myaccount-orders-col-id">Məhsul</th>
@@ -34,11 +35,13 @@
                             {% for item in order_items %}
                                 <tr>
                                     <td>
-                                        {% if item.product.images.first %}
-                                            <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" width="50">
+                                    {% with item.product.images.all|first as image %}
+                                        {% if image %}
+                                            <img src="{{ image.image.url }}" alt="{{ item.product.name }}" width="50">
                                         {% else %}
                                             <span>Şəkil yoxdur</span>
                                         {% endif %}
+                                    {% endwith %}
                                         <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
                                     </td>
                                     <td>

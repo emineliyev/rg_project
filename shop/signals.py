@@ -1,5 +1,7 @@
 from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete
+
+from parameters.models import Contact
 from shop.models import Product, Image, SuperSale
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
@@ -38,4 +40,14 @@ def clear_super_sales_cache(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Slider)
 def clear_slider_cache(sender, instance, **kwargs):
+    cache.clear()
+
+
+@receiver(post_save, sender=Product)
+def clear_product_cache(sender, instance, **kwargs):
+    cache.clear()
+
+
+@receiver(post_save, sender=Contact)
+def clear_contact_cache(sender, instance, **kwargs):
     cache.clear()

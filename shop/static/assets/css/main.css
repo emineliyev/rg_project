@@ -220,9 +220,11 @@
     background-color: #1F584C;
     color: #fff;
 }
-.menu-link:hover{
+
+.menu-link:hover {
     color: #fff;
 }
+
 .menu-item.has-children .arrow {
     font-size: 12px;
     transition: transform 0.3s;
@@ -247,4 +249,31 @@
 
 .arrow.open {
     transform: rotate(90deg);
+}
+
+
+.whatsapp-app {
+    position: fixed;
+    width: 45px;
+    height: 45px;
+    bottom: 80px;
+    background-color: #1F584C;
+    color: #fff;
+    border-radius: 50px;
+    line-height: 50px;
+    text-align: center;
+    font-size: 26px;
+    z-index: 100;
+    right: 32px;
+}
+
+
+.whatsapp-app:hover {
+    color: #fff;
+    background-color: #14543F;
+    transition: 0.8s;
+}
+
+.tm-breadcrumb ul li a:hover {
+    color: #fff;
 }

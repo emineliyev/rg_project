@@ -48,6 +48,7 @@
                             </option>
                         </select>
                     </form>
+
                     <div class="tm-shop-products">
                         <div class="row mt-30-reverse">
                             <!-- Single Product -->
@@ -108,11 +109,12 @@
                                             </h6>
                                             <div class="tm-ratingbox">
                                                 {% for i in "12345"|slice:":" %}
-                                                    <span class="{% if i <= product.average_rating|floatformat:0 %}is-active{% endif %}">
-                                                <i class="ion-android-star-outline"></i>
-                                            </span>
+                                                    <span class="{% if i <= product.average_rating|default:0|floatformat:0 %}is-active{% endif %}">
+                                                        <i class="ion-android-star-outline"></i>
+                                                    </span>
                                                 {% endfor %}
                                             </div>
+
                                             {% if product.discount > 0 %}
                                                 <span class="old-price">{{ product.price }} ₼</span>
                                                 <span class="tm-product-price">{{ product.discounted_price }} ₼</span>
@@ -205,14 +207,15 @@
                             </ul>
                         </div>
                     {% endif %}
+
                 </div>
 
                 <!-- Widgets -->
                 <div class="col-lg-3 col-12 order-2 order-lg-1">
                     <div class="widgets">
 
-                        <!-- Single Widget -->
 
+                        <!-- Single Widget -->
                         <div class="single-widget widget-categories">
                             <h6 class="widget-title">Kateqoriyalar</h6>
                             {% load mptt_tags %}

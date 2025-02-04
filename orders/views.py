@@ -2,19 +2,18 @@
 from decimal import Decimal
 
 # 2. Сторонние библиотеки Django
-from django.db.models import Sum
+from django.db.models import Sum, Prefetch
 from django.db.models.functions import TruncMonth
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 
 # 3. Импорты из проекта
-from shop.models import WeightOption
+from shop.models import WeightOption, Image
 from .models import Order, OrderItem
 from .forms import OrderForm, SalesFilterForm
 from cart.cart import Cart
 from .tasks import notify_low_stock, notify_new_order, generate_and_send_order_pdf
-
 
 
 @login_required
@@ -117,22 +116,48 @@ def checkout(request):
     })
 
 
+# @login_required
+# def order_detail(request, order_id):
+#     """
+#     Отображает детальную страницу заказа.
+#     """
+#     order = get_object_or_404(Order, id=order_id, user=request.user)
+#
+#     order_items = order.items.select_related('product')
+#     total_price = sum(item.quantity * item.price for item in order_items)
+#
+#     return render(request, 'orders/detail.html', {
+#         'order': order,
+#         'order_items': order_items,
+#         'total_price': total_price,
+#     })
+
+
 @login_required
 def order_detail(request, order_id):
     """
     Отображает детальную страницу заказа.
     """
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(
+        Order.objects.prefetch_related(
+            Prefetch(
+                'items',
+                queryset=OrderItem.objects.select_related('product')
+                .prefetch_related(Prefetch('product__images', queryset=Image.objects.only('id', 'product', 'image')))
+            )
+        ),
+        id=order_id,
+        user=request.user
+    )
 
-    order_items = order.items.select_related('product')
-    total_price = sum(item.quantity * item.price for item in order_items)
+    # Оптимизированный расчет итоговой стоимости
+    total_price = sum(item.quantity * item.price for item in order.items.all())
 
     return render(request, 'orders/detail.html', {
         'order': order,
-        'order_items': order_items,
+        'order_items': order.items.all(),
         'total_price': total_price,
     })
-
 
 def checkout_created(request):
     """
