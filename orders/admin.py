@@ -4,9 +4,23 @@ from decimal import Decimal
 # 2. Django и сторонние библиотеки
 from django.contrib import admin
 from django.urls import reverse
+from import_export import resources, fields
+from import_export.admin import ImportExportModelAdmin
+from import_export.formats.base_formats import XLSX
 
 # 3. Импорты из проекта
 from .models import Order, OrderItem
+
+
+class ProductResource(resources.ModelResource):
+    first_name = fields.Field(column_name="Имя", attribute="first_name")
+
+    class Meta:
+        model = Order
+        fields = (
+            'first_name', 'last_name', 'fin_code', 'email', 'country', 'city', 'address', 'postal_code', 'phone_number',
+            'created_at', 'updated_at', 'paid', 'coupon', 'discount',)
+        export_order = fields
 
 
 class OrderItemInline(admin.StackedInline):
@@ -92,9 +106,10 @@ class OrderItemInline(admin.StackedInline):
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ImportExportModelAdmin):
+    formats = [XLSX]
     list_display = [
-        'id', 'first_name', 'last_name', 'email',
+        'id', 'first_name', 'last_name', 'email', 'fin_code',
         'address', 'postal_code', 'city', 'status', 'paid',
         'created_at', 'updated_at'
     ]
@@ -113,6 +128,7 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': (
                 'first_name',
                 'last_name',
+                'fin_code',
                 'email',
                 'phone_number',
                 'address',

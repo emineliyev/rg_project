@@ -2,21 +2,23 @@ from django import forms
 from account.models import Account
 
 
-class UserRegisterForm(forms.Form):
+class UserRegisterForm(forms.ModelForm):
+    fin_code = forms.CharField(widget=forms.TextInput())  # ✅ Добавили fin_code в форму
     email = forms.EmailField(widget=forms.EmailInput())
-    name = forms.CharField(widget=forms.TextInput())
     password1 = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
-        model = Account  # Замените на вашу модель пользователя
-        fields = ['name', 'email', 'password1', 'password2']
+        model = Account
+        fields = ['fin_code', 'email', 'password1', 'password2']  # ✅ fin_code теперь обязателен
 
-    def clean_email(self):
-        email = self.cleaned_data.get("email")
-        if Account.objects.filter(email=email).exists():
-            raise forms.ValidationError("Bu e-poçtu olan istifadəçi artıq mövcuddur.")
-        return email
+    def clean_fin_code(self):
+        fin_code = self.cleaned_data.get("fin_code")
+        if not fin_code:
+            raise forms.ValidationError("Fin kod обязательно!")
+        if Account.objects.filter(fin_code=fin_code).exists():
+            raise forms.ValidationError("Этот Fin kod уже зарегистрирован.")
+        return fin_code
 
     def clean(self):
         cleaned_data = super().clean()
@@ -30,11 +32,12 @@ class UserRegisterForm(forms.Form):
 
     def save(self, commit=True):
         email = self.cleaned_data['email']
+        fin_code = self.cleaned_data['fin_code']  # ✅ Теперь `fin_code` берется из формы
         password = self.cleaned_data['password1']
 
-        # Create a new user using your custom manager
         user = Account.objects.create_user(
             email=email,
+            fin_code=fin_code,  # ✅ fin_code передается в модель
             password=password
         )
 

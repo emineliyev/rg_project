@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load cache %}
 {% block title %}{{ block.super }}: Bütün məhsullar{% endblock %}
 {% block content %}
 
@@ -32,7 +31,8 @@
                             <button data-view="list"><i class="ion-android-menu"></i></button>
                         </div>
 
-                        <p class="tm-shop-countview">{{ all_products }} məhsuldan {{ product_count }} məhsul göstərilir</p>
+                        <p class="tm-shop-countview">{{ all_products }} məhsuldan {{ product_count }} məhsul
+                            göstərilir</p>
 
                         <select name="sort" onchange="this.form.submit()">
                             <option value="">Sıralama</option>
@@ -172,6 +172,7 @@
                                     </li>
                                     <li>
                                         <a href="?page=
+
                                                 {{ page_obj.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
                                             <i class="ion-chevron-left"></i>
                                         </a>
@@ -181,10 +182,12 @@
                                 {% for num in page_obj.paginator.page_range %}
                                     {% if num == page_obj.number %}
                                         <li class="is-active"><a href="?page=
+
                                                 {{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
                                         </li>
                                     {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
                                         <li><a href="?page=
+
                                                 {{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
                                         </li>
                                     {% endif %}
@@ -193,12 +196,14 @@
                                 {% if page_obj.has_next %}
                                     <li>
                                         <a href="?page=
+
                                                 {{ page_obj.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
                                             <i class="ion-chevron-right"></i>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="?page=
+
                                                 {{ page_obj.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
                                             Sonuncu <i class="ion-chevron-right"></i>
                                         </a>
@@ -259,7 +264,8 @@
                                     </div>
                                     <div class="widget-pricefilter-actions">
                                         <button type="submit" class="widget-pricefilter-button">Filter</button>
-                                        <a href="{% url 'shop:products' %}" type="reset" class="widget-pricefilter-button text-white">Sıfırla</a>
+                                        <a href="{% url 'shop:products' %}" type="reset"
+                                           class="widget-pricefilter-button text-white">Sıfırla</a>
                                     </div>
                                 </div>
                             </form>
@@ -307,49 +313,4 @@
         </div>
     </div>
     <!--// Products Wrapper -->
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("price-filter-form");
-            const priceMinInput = document.getElementById("price_min");
-            const priceMaxInput = document.getElementById("price_max");
-            const leftLabel = document.querySelector(".tm-rangeslider-leftlabel");
-            const rightLabel = document.querySelector(".tm-rangeslider-rightlabel");
-            const slider = document.querySelector(".tm-rangeslider");
-
-            // Начальные значения
-            let minValue = parseFloat(slider.getAttribute("data-cur_min"));
-            let maxValue = parseFloat(slider.getAttribute("data-cur_max"));
-
-            // Функция обновления скрытых полей и отображения
-            function updateValues(min, max) {
-                priceMinInput.value = min;
-                priceMaxInput.value = max;
-                leftLabel.textContent = min;
-                rightLabel.textContent = max;
-            }
-
-            // Слушаем изменения на ползунке (эмуляция)
-            slider.addEventListener("mousemove", function (event) {
-                // Пример синхронизации значений
-                const rect = slider.getBoundingClientRect();
-                const percent = (event.clientX - rect.left) / rect.width;
-
-                if (event.target.classList.contains("tm-rangeslider-leftgrip")) {
-                    minValue = Math.max(0, Math.min(maxValue - 1, percent * slider.dataset.range_max));
-                } else if (event.target.classList.contains("tm-rangeslider-rightgrip")) {
-                    maxValue = Math.min(slider.dataset.range_max, Math.max(minValue + 1, percent * slider.dataset.range_max));
-                }
-
-                updateValues(minValue.toFixed(0), maxValue.toFixed(0));
-            });
-
-            // Обновляем значения перед отправкой формы
-            form.addEventListener("submit", function () {
-                updateValues(minValue.toFixed(0), maxValue.toFixed(0));
-            });
-        });
-    </script>
-
 {% endblock %}

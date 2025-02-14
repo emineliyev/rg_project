@@ -63,7 +63,7 @@
         {% include 'inc/_footer.html' %}
         <!--// Footer -->
 
-        <a href="https://api.whatsapp.com/send?phone=994703678873" target="_blank" class="whatsapp-app"><i class="ion-android-star-outline"></i></a>
+        <a href="https://api.whatsapp.com/send?phone=994703678873" target="_blank" class="whatsapp-app"><i class="ion-social-whatsapp-outline"></i></a>
         <button id="back-top-top"><i class="ion-arrow-up-c"></i></button>
     {% include 'inc/_cookie_consent.html' %}
 
@@ -87,25 +87,11 @@
     <script src="{% static 'assets/js/vendors/jquery.fancybox.min.js' %}"></script>
     <script src="{% static 'assets/js/vendors/imagesloaded.pkgd.min.js' %}"></script>
     <script src="{% static 'assets/js/vendors/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'assets/js/vendors/instafeed.min.js' %}"></script>
     <script src="{% static 'assets/js/vendors/jquery.nstslider.min.js' %}"></script>
     <script src="{% static 'assets/js/vendors/ScrollMagic.min.js' %}"></script>
     <script src="{% static 'assets/js/main.js' %}"></script>
     <script src="{% static 'assets/js/main/main.js' %}"></script>
     <!-- endinject -->
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const toastMessages = document.querySelectorAll('.toast-message');
-            toastMessages.forEach((toast) => {
-                setTimeout(() => {
-                    toast.style.transition = 'opacity 0.5s ease-out';
-                    toast.style.opacity = '0';
-                    setTimeout(() => toast.remove(), 500); // Удаляем элемент после завершения анимации
-                }, 5000); // 5 секунд задержка перед скрытием
-            });
-        });
-    </script>
 </body>
 
 </html>

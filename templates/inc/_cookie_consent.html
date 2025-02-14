@@ -10,13 +10,13 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        if (!getCookie("cookies_accepted")) {
-            document.getElementById("cookie-banner").style.display = "block";
-        } else {
-            document.getElementById("cookie-settings-btn").style.display = "block";
-        }
-    });
+    {#document.addEventListener("DOMContentLoaded", function () {#}
+    {#    if (!getCookie("cookies_accepted")) {#}
+    {#        document.getElementById("cookie-banner").style.display = "block";#}
+    {#    } else {#}
+    {#        document.getElementById("cookie-settings-btn").style.display = "block";#}
+    {#    }#}
+    {#});#}
 
     function acceptCookies() {
         document.cookie = "cookies_accepted=true; path=/; max-age=31536000"; // 1 il

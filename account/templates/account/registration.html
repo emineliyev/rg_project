@@ -5,13 +5,13 @@
 {% endblock %}
 {% block content %}
 <!-- Breadcrumb Area -->
-<div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+<div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
     <div class="container">
         <div class="tm-breadcrumb">
-            <h2>Login & Register</h2>
+            <h2>Qeydiyyat səhifəsi</h2>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li>Login & Register</li>
+                <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                <li>Qeydiyyat</li>
             </ul>
         </div>
     </div>
@@ -28,9 +28,9 @@
                     <h4>Hesab yaradın</h4>
                     <p>Xoş gəldiniz! Hesab üçün qeydiyyatdan keçin</p>
                     <div class="tm-form-inner">
-                        <div class="tm-form-field">
-                            <label for="{{ form.name.id_for_label }}">İstifadəçi adı</label>
-                            {{ form.name }}
+                                                <div class="tm-form-field">
+                            <label for="{{ form.fin_code.id_for_label }}">Fin kod</label>
+                            {{ form.fin_code }}
                         </div>
                         <div class="tm-form-field">
                             <label for="{{ form.email.id_for_label }}">E-poçt ünvanı</label>

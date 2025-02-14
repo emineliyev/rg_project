@@ -5,14 +5,14 @@
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
-    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
         <div class="container">
             <div class="tm-breadcrumb">
-                <h2>Checkout</h2>
+                <h2>Sifariş</h2>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="products.html">Shop</a></li>
-                    <li>Checkout</li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                    <li><a href="{% url 'cart:cart_detail' %}">Səbət</a></li>
+                    <li>Sifariş</li>
                 </ul>
             </div>
         </div>
@@ -120,8 +120,12 @@
                                         </tr>
                                     {% endif %}
                                     <tr class="">
-                                        <td>Mağaza endirimi:</td>
-                                        <td>- {{ total_discount|floatformat:2 }} ₼</td>
+                                        <td>Məhsul endirimi:</td>
+                                        <td>- {{ discount|floatformat:2 }} ₼</td>
+                                    </tr>
+                                    <tr class="">
+                                        <td class="text-success"><strong>Ümumi qazanc:</strong></td>
+                                        <td>- {{ summ_discount|floatformat:2 }} ₼</td>
                                     </tr>
                                     <tr class="">
                                         <td>(+) Çatdırılma haqqı</td>
@@ -141,16 +145,26 @@
                             <div class="tm-checkout-payment">
                                 <h4>Ödəniş metodunu seçin</h4>
                                 <div class="tm-form-inner">
-                                    {% comment %}
-                                        <div class="tm-form-field">
-                                            <input type="radio" name="checkout-payment-method"
-                                                   id="checkout-payment-banktransfer">
-                                            <label for="checkout-payment-banktransfer">Birbaşa Bank köçürməsi</label>
-                                            <div class="tm-checkout-payment-content">
-                                                <p>Hazırda bu üsül keçərli deyil.</p>
+                                    <div class="tm-form-field">
+                                        <input type="radio" name="checkout-payment-method" id="checkout-payment-creditcard" checked>
+                                        <label for="checkout-payment-creditcard">Kartdan karta</label>
+                                        <div class="tm-checkout-payment-content">
+                                            <div class="tm-bank-card">
+                                                <div class="tm-card-header">
+                                                    <span>Ödəniş üçün kart</span>
+                                                    <img width="200" src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="MasterCard" class="tm-card-logo">
+                                                </div>
+                                                <div class="tm-card-number">
+                                                    <span>XXXX XXXX XXXX 1234</span> <!-- Здесь можешь вставить свою карту -->
+                                                </div>
                                             </div>
+                                            <p class="tm-payment-info">
+                                                Zəhmət olmasa, ödənişi bu karta köçürün, <strong class="text-success">SİFARİŞ VERİN</strong> düyməsini sıxıb və təsdiq üçün bizimlə əlaqə saxlayın.
+                                            </p>
                                         </div>
+                                    </div>
 
+                                    {% comment %}
                                     <div class="tm-form-field">
                                         <input type="radio" name="checkout-payment-method"
                                                id="checkout-payment-checkpayment" checked="checked">
@@ -212,12 +226,4 @@
         </div>
     </div>
     <!--// Checkout Area -->
-
-    <script>
-    function toggleButton() {
-        const checkbox = document.getElementById('checkout-read-terms');
-        const submitButton = document.getElementById('submit-button');
-        submitButton.disabled = !checkbox.checked;
-    }
-</script>
 {% endblock %}

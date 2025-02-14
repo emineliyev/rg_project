@@ -137,6 +137,12 @@
                                     {% endfor %}
                                 </div>
 
+{#                                {% if new_product.weight_options.exists %}#}
+{#                                    <div class="tm-product-weight" data-tooltip="Çəki seçimləri mövcuddur">#}
+{#                                        <i class="ion-ios-albums"></i>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+
                                 <ul class="tm-product-actions">
                                     <li>
                                         <form method="post" action="{% url 'cart:cart_add' new_product.id %}">
@@ -177,7 +183,6 @@
                                         <span class="tm-product-badges-sale">- {{ new_product.discount|floatformat:0 }} %</span>
                                     {% endif %}
                                 </div>
-
                             </div>
                             <div class="tm-product-bottomside">
                                 <h6 class="tm-product-title">

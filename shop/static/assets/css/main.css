@@ -257,14 +257,18 @@
     width: 45px;
     height: 45px;
     bottom: 80px;
-    background-color: #1F584C;
+    background-color: #075E54;
     color: #fff;
     border-radius: 50px;
-    line-height: 50px;
+    line-height: 44px;
     text-align: center;
     font-size: 26px;
     z-index: 100;
     right: 32px;
+}
+
+.whatsapp-app i {
+    color: #fff;
 }
 
 
@@ -277,3 +281,130 @@
 .tm-breadcrumb ul li a:hover {
     color: #fff;
 }
+
+
+.tm-checkout-payment-content {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.tm-bank-card {
+    background: linear-gradient(135deg, #2c3e50, #4ca1af);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 320px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+.tm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.tm-card-logo {
+    width: 50px;
+}
+
+.tm-card-number {
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.tm-card-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.tm-card-footer {
+    font-size: 14px;
+    text-align: right;
+}
+
+.tm-payment-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+
+.tm-product-weight {
+    position: absolute;
+    bottom: 50px;
+    right: 20px;
+    background: #14543F; /* Темно-зеленый цвет, как у звезды */
+    color: white;
+    font-size: 20px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.tm-product-weight i {
+    font-size: 22px;
+}
+
+
+.tm-product-weight {
+    position: absolute; /* Остается абсолютным, чтобы быть в нужном углу */
+    bottom: 70px;
+    right: 20px;
+    background: goldenrod;
+    color: white;
+    font-size: 20px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+/* Иконка */
+.tm-product-weight i {
+    font-size: 22px;
+}
+
+/* Всплывающая подсказка */
+.tm-product-weight::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;  /* Поднимаем текст над иконкой */
+
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 10px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Показываем подсказку при наведении */
+.tm-product-weight:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+

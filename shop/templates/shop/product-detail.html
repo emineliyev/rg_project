@@ -130,7 +130,7 @@
                                                 {% for option in weight_options %}
                                                     <option value="{{ option.id }}"
                                                             data-price-modifier="{{ option.price_modifier }}">
-                                                        {{ option.weight|floatformat:0 }} q - {{ option.carat|floatformat:0 }} K
+                                                        {{ option.weight|floatformat:1 }} q - {{ option.carat|floatformat:0 }} K
                                                         (+{{ option.price_modifier|floatformat:2 }} ₼)
                                                     </option>
                                                 {% endfor %}
@@ -384,65 +384,4 @@
         </div>
     </div>
     <!--// Product Details Wrapper -->
-
-    <script>
-        // Получаем контейнер видео
-        const videoContainer = document.getElementById("draggable-video");
-
-        if (videoContainer) {
-            let isDragging = false;
-            let isExpanded = false;
-            let offsetX, offsetY;
-
-            // Добавляем кнопку скрытия
-            const closeButton = document.createElement("button");
-            closeButton.innerHTML = "&times;";
-            closeButton.classList.add("close-button");
-            videoContainer.appendChild(closeButton);
-
-            // Обработчик начала перетаскивания
-            videoContainer.addEventListener("mousedown", (e) => {
-                if (e.target === closeButton || isExpanded) return; // Игнорируем клик по кнопке закрытия или при увеличении
-                isDragging = true;
-                offsetX = e.clientX - videoContainer.offsetLeft;
-                offsetY = e.clientY - videoContainer.offsetTop;
-                videoContainer.classList.add("dragging");
-            });
-
-            // Обработчик перемещения мыши
-            document.addEventListener("mousemove", (e) => {
-                if (isDragging) {
-                    const left = e.clientX - offsetX;
-                    const top = e.clientY - offsetY;
-
-                    // Устанавливаем новые координаты контейнера
-                    videoContainer.style.left = `${left}px`;
-                    videoContainer.style.top = `${top}px`;
-                }
-            });
-
-            // Обработчик окончания перетаскивания
-            document.addEventListener("mouseup", () => {
-                if (isDragging) {
-                    isDragging = false;
-                    videoContainer.classList.remove("dragging");
-                }
-            });
-
-            // Обработчик клика на видео для увеличения/уменьшения
-            videoContainer.addEventListener("click", (e) => {
-                if (e.target.tagName === "VIDEO" && !isDragging) {
-                    isExpanded = !isExpanded;
-                    videoContainer.classList.toggle("expanded", isExpanded);
-                }
-            });
-
-            // Обработчик кнопки закрытия
-            closeButton.addEventListener("click", () => {
-                videoContainer.style.display = "none";
-            });
-        }
-
-
-    </script>
 {% endblock %}

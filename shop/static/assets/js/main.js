@@ -482,21 +482,6 @@
             });
         },
 
-        /* Instageed Active */
-        instafeedActive: function () {
-            var userFeed = new Instafeed({
-                get: 'user',
-                userId: 12620117360,
-                accessToken: '12620117360.1677ed0.73a0ac15057c4edcada08b9df21cfa49',
-                resolution: 'low_resolution',
-                limit: 8,
-                template: '<li><a href="{{link}}" target="_blank"><img src="{{image}}" /><ul class="tm-instaphotos-counter"><li><i class="ion-heart"></i> {{likes}}</li><li><i class="ion-chatbubbles"></i> {{comments}}</li></ul></a></li>',
-                filter: function (image) {
-                    return image.tags.indexOf('thememarch_jewelery') >= 0;
-                }
-            });
-            userFeed.run();
-        },
 
         /* Scroll Animation */
         scrollAnimation: function () {
@@ -693,7 +678,6 @@
             surose.rangeSlider();
             surose.productRatingInput();
             surose.productQuantityBox();
-            surose.instafeedActive();
             surose.scrollAnimation();
             surose.differentAddressFormToggle();
             surose.checkoutPaymentMethod();

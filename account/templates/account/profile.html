@@ -5,13 +5,13 @@
 {% endblock %}
 {% block content %}
     <!-- Breadcrumb Area -->
-    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="assets/images/breadcrumb-bg.jpg">
+    <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
         <div class="container">
             <div class="tm-breadcrumb">
-                <h2>Hesabınız</h2>
+                <h2>Profiliniz</h2>
                 <ul>
-                    <li><a href="index.html">Əsas səhifə</a></li>
-                    <li>Hesabım</li>
+                    <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                    <li>Profil</li>
                 </ul>
             </div>
         </div>
@@ -156,6 +156,8 @@
                                         {{ form.phone_number }}
                                     </div>
                                     <div class="tm-form-field">
+                                        <input type="password" name="fake-password" style="display:none;">
+
                                         <label for="{{ form.old_password.id_for_label }}">Cari şifrə</label>
                                         {{ form.old_password }}
                                     </div>

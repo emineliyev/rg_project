@@ -8,9 +8,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'change-me-in-production')
 
+
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]  # Убираем пустые значения
+
+SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'http://localhost:8000')
+
+# ✅ Гарантируем, что `SITE_DOMAIN` входит в `ALLOWED_HOSTS`
+if SITE_DOMAIN.replace("http://", "").replace("https://", "").rstrip("/") not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(SITE_DOMAIN.replace("http://", "").replace("https://", "").rstrip("/"))
+
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -32,6 +41,7 @@ INSTALLED_APPS = [
     'parameters.apps.ParametersConfig',
     'coupons.apps.CouponsConfig',
     'mptt',
+    'import_export',
     'debug_toolbar',
 ]
 
@@ -167,6 +177,10 @@ JAZZMIN_SETTINGS = {
         "parameters.Email": "fas fa-at",
         "parameters.ReturnsAndRefunds": "fas fa-sync-alt",
         "parameters.DeliveryInformation": "fas fa-truck",
+        "parameters.TermsAndConditions": "fas fa-scale-balanced",
+        "parameters.PrivacyPolicy": "fas fa-user-secret",
+        "parameters.Contact": "fas fa-address-book",
+        "coupons.Coupon": "fas fa-ticket",
     },
 
     # Настройки бокового меню
@@ -194,7 +208,7 @@ JAZZMIN_SETTINGS = {
 }
 
 TINYMCE_DEFAULT_CONFIG = {
-    'height': 500,
+    'height': 300,
     'width': '100%',
     'menubar': 'file edit view insert format tools table help',
     'plugins': 'advlist autolink lists link image charmap print preview hr anchor pagebreak',

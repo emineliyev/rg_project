@@ -14,7 +14,6 @@ from django.template.loader import render_to_string
 from orders.models import Order, OrderItem
 
 
-
 @shared_task
 def notify_low_stock(product_name, product_article, quantity_in_stock):
     """

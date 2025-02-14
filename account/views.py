@@ -69,40 +69,6 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-# @login_required
-# def profile(request):
-#     user = request.user  # Получаем текущего пользователя
-#     orders = Order.objects.filter(user=user)  # Получаем заказы текущего пользователя
-#
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST, request.FILES, instance=user)
-#         if form.is_valid():
-#             # Сохраняем профиль
-#             form.save()
-#
-#             # Обрабатываем изменение пароля
-#             old_password = form.cleaned_data.get('old_password')
-#             new_password = form.cleaned_data.get('new_password')
-#             if old_password and new_password:
-#                 if not user.check_password(old_password):
-#                     messages.error(request, "Cari şifrə səhv daxil edilib.")
-#                 else:
-#                     user.set_password(new_password)
-#                     user.save()
-#                     messages.success(request, "Şifrə uğurla dəyişdirildi.")
-#
-#             messages.success(request, "Profiliniz yeniləndi!")
-#             return redirect('account:profile')
-#     else:
-#         form = ProfileForm(instance=user)  # Предварительно заполняем форму данными текущего пользователя
-#
-#     context = {
-#         'form': form,
-#         'orders': orders,  # Добавляем заказы в контекст
-#     }
-#     return render(request, 'account/profile.html', context=context)
-
-
 @login_required
 def profile(request):
     user = request.user  # Получаем текущего пользователя

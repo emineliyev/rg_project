@@ -9,6 +9,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 
 class Country(models.Model):
@@ -37,24 +39,28 @@ class City(models.Model):
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, fin_code, password=None, **extra_fields):
+        """Создание обычного пользователя"""
         if not email:
-            raise ValueError(_('Users must have an email address'))
-        user = self.model(email=self.normalize_email(email))
+            raise ValueError(_('Email обязателен'))
+        if not fin_code:
+            raise ValueError(_('Fin kod обязателен'))
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, fin_code=fin_code, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        # Отправка письма для подтверждения адреса электронной почты
-        user.send_verification_email()
+
+        user.send_verification_email()  # ✅ Отправка письма после сохранения
+
         return user
 
-    def create_superuser(self, email, password=None):
-        user = self.create_user(
-            email,
-            password=password,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
+    def create_superuser(self, email, fin_code, password, **extra_fields):
+        """Создание суперпользователя"""
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(email, fin_code, password, **extra_fields)
 
 
 class Account(AbstractBaseUser, PermissionsMixin):
@@ -93,30 +99,47 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return self.is_admin
 
     def send_verification_email(self):
-        subject = 'Подтверждение адреса электронной почты'
-        # Это если реальный проект
-        # message = 'Для подтверждения адреса перейдите по ссылке: http://yourdomain.com/verify-email/?token={}'.format(self.generate_verification_token())
+        """Отправка письма с подтверждением email"""
+        if not self.verification_token:
+            self.verification_token = self.generate_verification_token()
+            self.save(update_fields=['verification_token'])  # ✅ Обновляем только поле `verification_token`
 
-        domain = 'http://localhost:8000'
-        self.verification_token = self.generate_verification_token()  # Генерация токена
-        self.save()  # Сохранение модели, чтобы токен был записан в базу данных
-        message = f'Для подтверждения адреса перейдите по ссылке: {domain}/verify-email/?token={self.verification_token}'
-        send_mail(subject, message, settings.EMAIL_HOST_USER, [self.email])
+        subject = 'Подтверждение адреса электронной почты'
+        domain = settings.SITE_DOMAIN  # ✅ Теперь домен берется из settings
+        verification_link = f'{domain}/verify-email/?token={self.verification_token}'
+
+        # ✅ Рендерим HTML-шаблон письма
+        html_message = render_to_string('account/verification_email.html', {'verification_link': verification_link})
+
+        # ✅ Создаем email с HTML и текстовым содержанием
+        email = EmailMultiAlternatives(subject, f'Для подтверждения перейдите по ссылке: {verification_link}',
+                                       settings.EMAIL_HOST_USER, [self.email])
+        email.attach_alternative(html_message, "text/html")
+
+        email.send()
 
     def generate_verification_token(self):
         """
-        Генерация токена для подтверждения адреса электронной почты
+        Генерация фиксированного 32-символьного токена для подтверждения email
         """
-        token_length = 64  # Длина токена, которая точно помещается в max_length=100
-        return secrets.token_urlsafe(token_length // 2)
+        return secrets.token_hex(16)  # Генерирует ровно 32 символа
+
+    class Meta:
+        verbose_name = 'İstifadəçi'
+        verbose_name_plural = 'İstifadəçilər'
 
 
 @receiver(pre_save, sender=Account)
 def fin_upper(sender, instance, **kwargs):
-    instance.fin_code = instance.fin_code.upper()
+    """Делаем FIN код верхним регистром (если он есть)"""
+    if instance.fin_code:
+        instance.fin_code = instance.fin_code.upper()
 
 
 @receiver(pre_save, sender=Account)
-def first_name_adn_last_name_title(sender, instance, **kwargs):
-    instance.first_name = instance.first_name.title()
-    instance.last_name = instance.last_name.title()
+def first_name_and_last_name_title(sender, instance, **kwargs):
+    """Делаем `first_name` и `last_name` с заглавной буквы (если они есть)"""
+    if instance.first_name:
+        instance.first_name = instance.first_name.title()
+    if instance.last_name:
+        instance.last_name = instance.last_name.title()

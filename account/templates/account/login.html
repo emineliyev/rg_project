@@ -8,10 +8,10 @@
 <div class="tm-breadcrumb-area tm-padding-section bg-grey" data-bgimage="{% static 'assets/images/breadcrumb-bg.jpg' %}">
     <div class="container">
         <div class="tm-breadcrumb">
-            <h2>Login & Register</h2>
+            <h2>Giriş səhifəsi</h2>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li>Login & Register</li>
+                <li><a href="{% url 'shop:index' %}">Əsas səhifə</a></li>
+                <li>Daxil ol</li>
             </ul>
         </div>
     </div>
@@ -51,7 +51,6 @@
                                     <div class="tm-form-sociallogin">
                                         <h6>Və ya ilə daxil olun:</h6>
                                         <ul>
-                                            <li><a href="#" class="facebook-btn"><i class="ion-social-facebook"></i></a></li>
                                             <li><a href="#" class="google-btn"><i class="ion-social-google"></i></a></li>
                                         </ul>
                                     </div>

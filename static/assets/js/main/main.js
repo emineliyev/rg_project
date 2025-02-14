@@ -27,3 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Опции веса не найдены для данного товара.");
     }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menuItems = document.querySelectorAll(".menu-item.has-children");
+
+    menuItems.forEach((item) => {
+        item.addEventListener("click", function (event) {
+            event.preventDefault(); // Предотвращаем переход по ссылке
+
+            const submenu = item.nextElementSibling;
+            const arrow = item.querySelector(".arrow");
+
+            if (submenu) {
+                submenu.classList.toggle("open");
+                arrow.classList.toggle("open");
+            }
+        });
+    });
+});
